@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fizika Emelt</title>
+
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      processEscapes: true
+    }
+  };
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --text: #0f172a;
+    --muted: #475569;
+    --border: #e2e8f0;
+    
+    /* Letisztult, fókuszált fizika színpaletta */
+    --def-border: #6366f1; --def-bg: #f5f3ff; --def-text: #4338ca;
+    --thm-border: #0ea5e9; --thm-bg: #f0f9ff; --thm-text: #0369a1;
+    --biz-border: #f97316; --biz-bg: #fff7ed; --biz-text: #c2410c;
+    --app-border: #10b981; --app-bg: #ecfdf5; --app-text: #047857;
+    
+    --radius: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding: 40px 16px 80px;
+  }
+
+  .wrapper {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  /* Navigáció */
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    margin-bottom: 24px;
+    transition: all 0.2s;
+  }
+  .back-btn:hover { color: var(--text); background: #f1f5f9; }
+
+  /* Tétel Fejléc */
+  header {
+    background: var(--surface);
+    padding: 32px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    margin-bottom: 32px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    background: #f1f5f9;
+    color: var(--muted);
+    padding: 6px 14px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+  }
+
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+  }
+
+  .subtitle {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* Gyorsmenü / Tartalomjegyzék */
+  .toc-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 32px;
+  }
+  .toc-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+    letter-spacing: 0.05em;
+  }
+  .toc-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    list-style: none;
+  }
+  .toc-item a {
+    font-size: 14px;
+    color: var(--muted);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.15s;
+  }
+  .toc-item a:hover { color: var(--text); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); display: inline-block; }
+  .toc-item a:hover .dot { background: var(--thm-border); }
+
+  /* Tanulási szakaszok */
+  .section-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin-bottom: 32px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.01);
+    scroll-margin-top: 20px;
+  }
+
+  .section-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* Speciális Fizika Blokkok */
+  .block {
+    border-left: 4px solid var(--border);
+    padding: 16px 20px;
+    margin: 20px 0;
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  
+  .block.def { border-left-color: var(--def-border); background: var(--def-bg); }
+  .block.thm { border-left-color: var(--thm-border); background: var(--thm-bg); }
+  .block.biz { border-left-color: var(--biz-border); background: var(--biz-bg); }
+  .block.app { border-left-color: var(--app-border); background: var(--app-bg); }
+
+  .step-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+  .block.def .step-label { color: var(--def-text); }
+  .block.thm .step-label { color: var(--thm-text); }
+  .block.biz .step-label { color: var(--biz-text); }
+  .block.app .step-label { color: var(--app-text); }
+
+  /* Szövegformázás */
+  b { font-weight: 600; color: #000; }
+  ul, ol { margin-left: 20px; margin-top: 8px; }
+  li { margin-bottom: 6px; }
+
+  footer {
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 60px;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+  <a href="index.html" class="back-btn">← Főoldal</a>
+  
+  <header>
+    <div class="badge">Fizika • 4. Témakör</div>
+    <h1 id="main-title">Elektromosság és mágnesesség</h1>
+    <p class="subtitle" id="main-subtitle">Az elektrosztatika, az egyenáram, a mágneses mező és az elektromágneses indukció törvényei, valamint azok környezeti és ipari alkalmazásai</p>
+  </header>
+
+  <div class="toc-box">
+    <div class="toc-title">Navigáció a tétel részei között</div>
+    <ul class="toc-list" id="toc"></ul>
+  </div>
+
+  <main id="content-container"></main>
+
+  <footer></footer>
+</div>
+
+<script>
+// A tétel minden kártyanyitogatás nélkül, logikus folyószövegként, de szigorúan tipografizálva
+const sections = [
+  {
+    id: 0,
+    title: "Időben állandó elektromos tér (Elektrosztatika)",
+    content: `
+      <div class="block def">
+        <div class="step-label">Elektrosztatikai alapjelenségek és a Coulomb-törvény</div>
+        • <b>Elektromos töltés:</b> Az anyagok alapvető tulajdonsága. Kétféle töltés létezik: pozitív és negatív. Azonos előjelűek taszítják, ellentétes előjelűek vonzzák egymást. A töltés kvantált (az elemi töltés, $e \\approx 1{,}602 \\cdot 10^{-19} \\, \\text{C}$ egész számú többszöröse) és zárt rendszerben érvényes a <i>töltésmegmaradás törvénye</i>.<br>
+        • <b>Coulomb-törvénye:</b> Két pontszerű, nyugalomban lévő $Q_1$ és $Q_2$ elektromos töltés között ható erő egyenesen arányos a töltések nagyságának szorzatával, és fordítottan arányos a közöttük lévő $r$ távolság négyzetével:
+        $$F_{\\text{C}} = k \\cdot \\frac{|Q_1 \\cdot Q_2|}{r^2}$$
+        Ahol $k$ az elektrosztatikai állandó. Vákuumban (és jó közelítéssel levegőben):
+        $$k = \\frac{1}{4\\pi \\varepsilon_0} \\approx 8{,}988 \\cdot 10^9 \\, \\frac{\\text{N} \\cdot \\text{m}^2}{\\text{C}^2}$$
+        (\\$\\varepsilon_0\\$ a vákuum permittivitása / dielektromos állandója: $\\varepsilon_0 \\approx 8{,}854 \\cdot 10^{-12} \\, \\text{As/Vm}$).
+      </div>
+      <div class="block thm">
+        <div class="step-label">Az elektromos erőtér vektoriális és skaláris jellemzése</div>
+        Az elektromos mező a töltött testek környezetében kialakuló anyagi valóság, amelyen keresztül a töltések erőt fejtenek ki egymásra.<br>
+        • <b>Elektromos térerősség (Vektoriális jellemzés):</b> A mező egy adott pontjába helyezett pozitív $q$ próbanyomatékra ható elektromos erő és a töltés nagyságának aránya:
+        $$\\vec{E} = \\frac{\\vec{F}}{q} \\quad \\left[ \\text{Egysége: } \\frac{\\text{N}}{\\text{C}} = \\frac{\\text{V}}{\\text{m}} \\right]$$
+        Ponttöltés mezejében a térerősség: $E = k \\cdot Q / r^2$. Grafikus ábrázolására az <b>erővonalakat</b> használjuk, amelyek iránya megegyezik a pozitív töltésre ható erő irányával, sűrűségük pedig arányos a mező térerősségével. Szabad töltésekből indulnak ki (pozitív) és töltéseken végződnek (negatív), vagy a végtelenbe nyúlnak (örvénymentes mező).<br>
+        • <b>Elektromos potenciál (Skaláris jellemzés):</b> A mező egy pontjának energetikai állapota. Megadja az adott pontba helyezett egységnyi pozitív töltés rögzített viszonyítási ponthoz (többnyire a végtelenhez vagy a leföldelt ponthoz) viszonyított potenciális energiáját:
+        $$U_{\\text{A}} = \\frac{E_{\\text{pot,A}}}{q} \\quad \\left[ \\text{Egysége: } \\text{V} = \\frac{\\text{J}}{\\text{C}} \\right]$$
+        • <b>Elektromos feszültség:</b> Két pont (A és B) közötti potenciálkülönbség, ami megadja a mező által végzett munkát, miközben egységnyi pozitív töltést mozgat át A-ból B-be:
+        $$U_{\\text{AB}} = U_{\\text{A}} - U_{\\text{B}} = \\frac{W_{\\text{AB}}}{q}$$
+        • <b>Egyszerű elektrosztatikus térerők:</b><br>
+        1. <i>Homogén mező:</i> A térerősségvektor a mező minden pontjában állandó nagyságú és irányú (pl. síkkondenzátor lemezei között). Itt a feszültség és térerősség kapcsolata: $U = E \\cdot d$, ahol $d$ a lemezek távolsága.<br>
+        2. <i>Centrálisan szimmetrikus mező:</i> Ponttöltés vagy gömbszimmetrikus töltéseloszlás körül alakul ki, a térerősség a sugár mentén kifelé vagy befelé mutat, nagysága $1/r^2$ szerint csökken.
+      </div>
+      <div class="block biz">
+        <div class="step-label">Kondenzátorok, kapacitás és a dielektrikum szerepe</div>
+        A kondenzátor nagy mennyiségű elektromos töltés és energia tárolására szolgáló áramköri elem, amely legalább két, egymástól szigetelővel elválasztott vezető testből áll.<br>
+        • <b>Kapacitás ($C$):</b> A kondenzátorra vitt $Q$ töltés és a lemezei között mérhető $U$ feszültség aránya, ami független a töltéstől és feszültségtől, csak a geometriától és a szigetelőtől függ:
+        $$C = \\frac{Q}{U} \\quad \\left[ \\text{Egysége: Farad (F) } = \\frac{\\text{C}}{\\text{V}} \\right]$$
+        • <b>A síkkondenzátor kapacitása:</b>
+        $$C = \\varepsilon_0 \\cdot \\varepsilon_{\\text{r}} \\cdot \\frac{A}{d}$$
+        Ahol $A$ a fegyverzetek egymással szemközti felülete, $d$ a lemeztávolság, $\\varepsilon_{\\text{r}}$ pedig a lemezek közé helyezett szigetelőanyag (dielektrikum) <b>relatív permittivitása</b> (relatív dielektromos állandója).<br>
+        • <b>A szigetelőanyag kapacitásmódosító szerepe:</b> A szigetelő molekulái a külső elektromos tér hatására polarizálódnak (töltéseltolódás történik). A kialakuló belső, indukált mező <i>ellentétes irányú</i> a külső térrel, így a lemezek közötti eredő térerősséget $\\varepsilon_{\\text{r}}$-ed részére csökkenti ($E = E_0 / \\varepsilon_{\\text{r}}$). Ha a kondenzátor le van választva a telepről ($Q = \\text{állandó}$), a feszültség is csökken ($U = U_0 / \\varepsilon_{\\text{r}}$), amiből következik, hogy a kapacitás $\\varepsilon_{\\text{r}}$-szeresére növekszik ($C = \\varepsilon_{\\text{r}} \\cdot C_0$).<br>
+        • <b>A feltöltött kondenzátor energiája:</b> A feltöltési folyamat során végzett munka elektromos mező energiájaként tárolódik el:
+        $$W = E_{\\text{en}} = \\frac{1}{2} \\cdot Q \\cdot U = \\frac{1}{2} \\cdot C \\cdot U^2 = \\frac{1}{2} \\cdot \\frac{Q^2}{C}$$
+      </div>
+      <div class="block app">
+        <div class="step-label">Csúcshatás, földelés, árnyékolás és környezeti alkalmazások</div>
+        • <b>Csúcshatás:</b> Egy szabálytalan alakú vezető felületén a töltések nem egyenletesen oszlanak el; a legnagyobb felületi töltéssűrűség és ezáltal a legnagyobb térerősség a kis görbületi sugarú helyeken, a <b>csúcsokon</b> alakul ki. A térerősség itt olyan hatalmas lehet, hogy ionizálja a környező levegő molekuláit, és elektromos megindulást (koronakisülést vagy szikrát) okoz. Ezen alapul a <i>villámhárító</i> működése (Benjamin Franklin).<br>
+        • <b>Szikrák és villámok (Légköri elektrosztatika):</b> A felhőkben a jég- és vízcseppek súrlódása miatt óriási töltéskülönbségek jönnek létre. Amikor a felhő és a föld (vagy két felhő) közötti térerősség eléri a levegő átütési szilárdságát (kb. $3 \\, \\text{kV/mm}$), a levegő ionizálódik, vezető csatorna alakul ki, és gázkisülés, azaz villám keletkezik.<br>
+        • <b>Elektrosztatikus árnyékolás (Faraday-kalitka):</b> Ha egy vezető anyagú zárt köpenyt (fémhálót vagy dobozt) elektromos térbe helyezünk, a benne lévő szabad elektronok elmozdulnak (influencia), és a külső térrel pontosan egyenlő nagyságú, de ellentétes irányú belső teret hoznak létre. Ennek eredményeképpen a vezető belsejében a térerősség <b>garantáltan zéró</b> ($E = 0$). Alkalmazása: érzékeny elektronikai eszközök védelme, koaxiális kábelek árnyékolása, repülőgép vagy autó villámcsapás esetén.<br>
+        • <b>Földelés:</b> Egy vezető összekötése a Földdel (mint gyakorlatilag végtelen kapacitású és zéró potenciálú testtel). Célja a töltések elvezetése a sztatikus feltöltődés megakadályozására és az érintésvédelemre.<br>
+        • <b>Kondenzátorok gyakorlati alkalmazásai:</b> Energiatárolás villanófényekben (vaku), feszültségingadozások kiszűrése (szűrőkondenzátorok tápegységekben), időzítőáramkörök, billentyűzetek (kapacitív érzékelés, ahol a billentyű lenyomásakor változik a lemeztávolság és így a kapacitás).
+      </div>`
+  },
+  {
+    id: 1,
+    title: "Az elektromos áram és egyenáramú áramkörök",
+    content: `
+      <div class="block def">
+        <div class="step-label">Az elektromos áram fogalma, feltételei és az áramkör</div>
+        • <b>Elektromos áram:</b> Töltéshordozók (elektronok, ionok) rendezett, egyirányú áramlása. Az áramerősség ($I$) a vezető keresztmetszetén egységnyi idő alatt áthaladó töltésmennyiség:
+        $$I = \\frac{dq}{dt} \\quad \\rightarrow \\quad I = \\frac{Q}{t} \\quad \\text{(időben állandó áramnál)} \\quad \\left[ \\text{Egysége: Amper (A)} = \\frac{\\text{C}}{\\text{s}} \\right]$$
+        Technikai áramirányként megegyezés szerint a pozitív töltéshordozók mozgási irányát tekintjük (a valóságban fémekben a negatív elektronok az ellentétes irányba, a negatív pólustól a pozitív felé haladnak).<br>
+        • <b>A tartós áram fennmaradásának feltételei:</b> Zárt áramkör és a vezető belsejében fenntartott elektromos mező (feszültségforrás).<br>
+        • <b>Áramforrás és elektromotoros erő:</b> Az áramforrás olyan berendezés, amely nem-elektromos (kémiai, mechanikai, fény-) energia árán a töltéseket a belső áramkörében a mező ellenében mozgatja, fenntartva a pólusok közötti potenciálkülönbséget. Az <b>elektromotoros erő</b> ($\\varepsilon$ vagy $U_0$) az áramforrás teljes üresjárati feszültsége, amikor nem folyik rajta keresztül áram (belső feszültségesés nélkül).
+      </div>
+      <div class="block thm">
+        <div class="step-label">Ohm törvényei és az elektromos ellenállás</div>
+        • <b>Ohm törvénye egy áramköri szakaszra:</b> Fémes vezetőkben állandó hőmérsékleten a vezető szakaszon átfolyó áramerősség egyenesen arányos a rajta eső feszültséggel:
+        $$I = \\frac{U}{R} \\quad \\rightarrow \\quad R = \\frac{U}{I} \\quad \\left[ \\text{Egysége: Ohm (} \\Omega \\text{)} = \\frac{\\text{V}}{\\text{A}} \\right]$$
+        Ahol $R$ a fogyasztó elektromos ellenállása.<br>
+        • <b>A vezető ellenállása a geometriai méreteitől függ:</b>
+        $$R = \\rho \\cdot \\frac{l}{A}$$
+        Ahol $l$ a vezető hossza, $A$ a keresztmetszete, $\\rho$ pedig az anyagra jellemző <b>fajlagos ellenállás</b> ($[\\Omega \\cdot \\text{m}]$). A fajlagos ellenállás függ a hőmérséklettől: fémeknél a hőmérséklet növekedésével lineárisan nő (a rácspontok intenzívebb rezgése gátolja az elektronok áramlását): $\\rho(T) = \\rho_0 \\cdot (1 + \\alpha \\cdot \\Delta T)$, ahol $\\alpha$ a hőmérsékleti tényező.
+      </div>
+      <div class="block biz">
+        <div class="step-label">Az áram munkája, teljesítménye és Joule-hője</div>
+        • <b>Az áram munkája ($W$):</b> Az elektromos mező által a töltések mozgatása közben végzett munka, amely megegyezik a fogyasztó által felvett energiával:
+        $$W = U \\cdot I \\cdot t = I^2 \\cdot R \\cdot t = \\frac{U^2}{R} \\cdot t \\quad \\left[ \\text{Joule (J)} \\right]$$
+        • <b>Elektromos teljesítmény ($P$):</b> Az egységnyi idő alatt végzett munka:
+        $$P = \\frac{W}{t} = U \\cdot I = I^2 \\cdot R = \\frac{U^2}{R} \\quad \\left[ \\text{Watt (W)} \\right]$$
+        • <b>Az áram hőhatása (Joule-törvény):</b> A vezetőben áramló elektronok ütköznek a fémrács ionjaival, átadva kinetikus energiájukat, ami növeli a rács belső energiáját, vagyis a vezető felmelegszik. A keletkező <b>Joule-hő</b>: $Q = I^2 \\cdot R \\cdot t$.
+      </div>
+      <div class="block app">
+        <div class="step-label">Az áram egyéb hatásai, az elektrolízis és Faraday törvényei</div>
+        • <b>Az áram vegyi hatása és az elektrolízis:</b> Amikor elektromos áram folyik át elektrolitokon (savak, bázisok, sók vizes oldatai vagy olvadékai), a szabadon mozgó ionok elmozdulnak: a pozitív kationok a katódhoz (negatív pólus), a negatív anionok az anódhoz (pozitív pólus) vándorolnak, ahol semlegesítődnek (elektroncsere történik, redoxireakció).<br>
+        • <b>Faraday I. törvénye:</b> Az elektrolízis során az elektródokon kivált $m$ anyag tömege egyenesen arányos az áthaladt $Q$ töltésmennyiséggel:
+        $$m = k_{\\text{e}} \\cdot Q = k_{\\text{e}} \\cdot I \\cdot t$$
+        Ahol $k_{\\text{e}}$ az anyag elektroanalitikai egyenértéke.<br>
+        • <b>Faraday II. törvénye:</b> $1 \\, \\text{mol}$ egyszeres pozitív töltésű ion kiválasztásához mindig rögzített $F$ töltésmennyiség szükséges. Ez a <b>Faraday-állandó</b>:
+        $$F = N_{\\text{A}} \\cdot e \\approx 96485 \\, \\frac{\\text{C}}{\\text{mol}}$$
+        • <b>Az áram biológiai hatásai:</b> Az élő szervezeteken áthaladó áram ingerli az idegeket és izmokat, ami szívkamraleffenést és izomgörcsöt okozhat (a sérült nem tudja elengedni a vezetőt). Emellett a Joule-hő miatt belső égési sérüléseket, az elektrolízis miatt pedig a vér és a sejtnedvek vegyi bomlását idézi elő.<br>
+        • <b>Elektromosság a környezetünkben:</b> Háztartási hálózat ($230 \\, \\text{V}$, $50 \\, \\text{Hz}$-es váltakozó áram). Érintésvédelmi eszközök: <i>földelés</i> (a fém burkolat levezetése), <i>biztosítékok</i> (túláram esetén megszakítják az áramkört a Joule-hő általi olvadással vagy mágneses elven), valamint a <i>FI-relé</i> (hibaáram-védelmi kapcsoló, amely érzékeli, ha a fázisvezetéken befolyó és a nulla vezetéken kifolyó áram nem egyezik, jelezve, hogy a föld felé vagy egy emberen át szivárog az áram, és ezredmásodpercek alatt lekapcsol).
+      </div>`
+  },
+  {
+    id: 2,
+    title: "Időben állandó mágneses tér és a Lorentz-erő",
+    content: `
+      <div class="block def">
+        <div class="step-label">Mágneses alapjelenségek, a dipólus és a Föld mágneses mezeje</div>
+        • <b>Mágneses alapjelenségek:</b> Bizonyos anyagok (pl. magnetit, vas, nikkel, kobalt) környezetükben mágneses mezőt hoznak létre. A mágneseknek mindig két pólusa van: északi (É) és déli (D). Azonos pólusok taszítják, ellentétesek vonzzák egymást.<br>
+        • <b>Mágneses dipólus fogalma:</b> Nem létezik izolált mágneses monopólus (egyetlen északi vagy déli pólus). Ha egy mágnest kettévágunk, két újabb, teljes kétpólusú mágnest kapunk. A mágneses mező forrásai strukturálisan mindig zárt áramhurkok vagy elemi részecskék spinjei (mágneses dipólusok).<br>
+        • <b>Mágneses megosztás:</b> Külső mágneses térbe helyezett ferromágneses anyagokban az elemi mágneses dipólusok (Weiss-féle domének) egy irányba rendeződnek, így az anyag maga is mágnessé válik.<br>
+        • <b>A Föld mágneses mezeje:</b> A Földet egy óriási mágneses dipólusként modellezhetjük, amelyet a magban lévő folyékony fémek áramlása generál (dinamó-effektus). Fontos, hogy a Föld <i>földrajzi északi</i> pólusának közelében a Föld <i>mágneses déli</i> pólusa található (ezért vonzza a tájoló északi tűjét). Védelmi szerepe kritikus: a kozmikus töltött részecskéket (napszelet) eltéríti, megvédve a bioszférát (a részecskék a pólusoknál lépnek be, ionizálva a légkört: sarki fény).
+      </div>
+      <div class="block thm">
+        <div class="step-label">A mágneses mező mennyiségi jellemzése</div>
+        • <b>Mágneses indukcióvektor ($\{B}$):</b> A mágneses mezőt kvantitatívan jellemző vektormennyiség. Iránya a mezőbe helyezett próbamágnes északi pólusára ható forgatónyomaték iránya. Nagyságát az áramvezetőre ható maximális erő alapján definiáljuk:<br>
+        $$B = \\frac{F_{\\text{max}}}{I \\cdot l} \\quad \\left[ \\text{Egysége: Tesla (T) } = \\frac{\\text{N}}{\\text{A} \\cdot \\text{m}} = \\frac{\\text{V} \\cdot \\text{s}}{\\text{m}^2} \\right]$$
+        Grafikusan <b>mágneses indukcióvonalakkal</b> ábrázoljuk, amelyek zárt görbék (forrásmentes mező): a mágnesen kívül az északi pólustól a déli felé haladnak, a mágnesen belül a délitől az északi felé.<br>
+        • <b>Mágneses indukciófluxus ($\\Phi$):</b> Egy adott $A$ felületen áthaladó indukcióvonalak száma. Homogén mezőben, a felületre merőleges normális esetén:
+        $$\\Phi = B \\cdot A \\cdot \\cos \\alpha \\quad \\left[ \\text{Egysége: Weber (Wb) } = \\text{V} \\cdot \\text{s} \\right]$$
+        Ahol $\\alpha$ az indukcióvektor és a felület merőlegesének (normálisának) szöge.
+      </div>
+      <div class="block biz">
+        <div class="step-label">Áramok mágneses tere és a közeg permeabilitása</div>
+        Hans Christian Ørsted (1820) fedezte fel, hogy az elektromos áram (mozgó töltés) mágneses mezőt generál. A tér alakja az áramvezető geometriájától függ:<br>
+        1. <i>Egyenes vezető tere:</i> Koncentrikus körök alkotják. Irányát a <b>jobbkéz-szabály</b> adja meg: ha a jobb kezünk kinyújtott hüvelykujja az áram irányába mutat, befelé hajló ujjaink a mágneses indukcióvonalak irányát jelzik. Nagysága a vezetőtől mért $r$ távolságban: $B = \\mu \\cdot I / (2\\pi r)$.<br>
+        2. <i>Hosszú egyenes tekercs (szolenoid) belső tere:</i> A tekercs belsejében a mező jó közelítéssel homogén, az indukcióvonalak párhuzamosak a tekercs tengelyével. Nagysága:
+        $$B = \\mu_0 \\cdot \\mu_{\\text{r}} \\cdot \\frac{N}{l} \\cdot I$$
+        Ahol $N$ a menetszám, $l$ a tekercs hossza, $I$ az áramerősség.<br>
+        • <b>Permeabilitás (Mágneses áteresztőképesség):</b> $\\mu_0$ a vákuum permeabilitása ($\\mu_0 = 4\\pi \\cdot 10^{-7} \\, \\text{Vs/Am}$), $\\mu_{\\text{r}}$ pedig a közeg relatív permeabilitása. Ez megmutatja, hogy hányszorosára változik a mágneses indukció a vákuumhoz képest. Ferromágneses anyagoknál (vas) $\\mu_{\\text{r}} \\gg 1$, ezért alkalmaznak vasmagot az elektromágnesekben a mező felerősítésére.
+      </div>
+      <div class="block biz">
+        <div class="step-label">Mágneses erőhatások és a Lorentz-erő</div>
+        • <b>Lorentz-erő:</b> Mágneses mezőben mozgó elektromos töltésre ható erő. Egy $q$ töltésű, $\\vec{v}$ sebességű részecskére ható erő értéke:
+        $$F_{\\text{L}} = q \\cdot v \\cdot B \\cdot \\sin \\alpha$$
+        Ahol $\\alpha$ a $\\vec{v}$ és $\\vec{B}$ vektorok által bezárt szög. Ha a részecske párhuzamosan mozog az indukcióvonalakkal, az erő zéró. Az erő iránya merőleges mind a sebességre, mind az indukcióra, meghatározása a <b>balmancs-szabály</b> alapján történik (behúzott ujjak a sebesség, tenyérbe fúródó indukcióvonalak esetén a kinyújtott hüvelykujj mutatja a pozitív töltésre ható erőt; negatív töltésnél az erő iránya ellentétes).<br>
+        Mivel a Lorentz-erő mindig merőleges a sebességre, az erő teljesítménye zéró ($P = \\vec{F} \\cdot \\vec{v} = 0$), vagyis a mágneses mező a töltésen <b>munkát nem végez</b>, a sebesség nagyságát (és így a részecske kinetikus energiáját) nem tudja megváltoztatni, <b>csak a részecske mozgásirányát téríti el</b>.<br>
+        • <b>Töltés mozgása homogén mágneses mezőben (merőleges belépésnél):</b> Mivel a Lorentz-erő állandó nagyságú és folyamatosan merőleges a sebességre, centripetális erőként funkcionál, így a részecskét <b>egyenletes körmozgásra</b> kényszeríti:
+        $$F_{\\text{L}} = F_{\\text{cp}} \\quad \\rightarrow \\quad q \\cdot v \\cdot B = m \\cdot \\frac{v^2}{r} \\quad \\rightarrow \\quad r = \\frac{m \\cdot v}{q \\cdot B}$$
+      </div>
+      <div class="block app">
+        <div class="step-label">Gyakorlati alkalmazások és a részecskegyorsító</div>
+        • <b>Ciklotron (Részecskegyorsító):</b> Olyan berendezés, amely töltött részecskéket (pl. protonokat) gyorsít fel nagy energiára mágneses és elektromos mező együttes alkalmazásával. Két félkör alakú, D-alakú üreges fémdobozból (duánsból) áll, amelyekben homogén mágneses mező van jelen. A mágneses mező körpályán tartja a részecskét. A két duáns közötti résben nagyfrekvenciájú váltakozó feszültség (elektromos mező) működik, amely minden egyes átlépésnél felgyorsítja a részecskét. Ahogy a sebesség nő, a körpálya sugara ($r = mv/qB$) is nő, így a részecske spirális pályán halad kifelé.<br>
+        • <b>Mágneses tér hatása áramvezetőre (Ampere-erő):</b> Mivel az áram mozgó elektronok sokasága, a makroszkopikus vezetőre ható erő a mikroszkopikus Lorentz-erők összege: $F_{\\text{A}} = I \\cdot l \\cdot B \\cdot \\sin \\alpha$. Ezen alapulnak az analóg deprez-műszerek (árammérők) és a villanymotorok.
+      </div>`
+  },
+  {
+    id: 3,
+    title: "Elektromágneses indukció, váltakozó áram és elektromos gépek",
+    content: `
+      <div class="block thm">
+        <div class="step-label">A mozgási és a nyugalmi indukció fizikai háttere</div>
+        Michael Faraday (1831) fedezte fel, hogy a mágneses mező megváltozása elektromos mezőt hoz létre (indukció). Az indukált elektromotoros erő ($\\varepsilon_{\\text{ind}}$) egyenesen arányos a mágneses fluxus megváltozásának sebességével (Faraday-féle indukciótörvény):
+        $$\\varepsilon_{\\text{ind}} = - \\frac{d\\Phi}{dt}$$
+        • <b>Mozgási indukció:</b> Akkor lép fel, ha egy vezető szakasz mágneses mezőben mozog úgy, hogy metszi az indukcióvonalakat. <br>
+        <i>Értelmezése a Lorentz-erő alapján:</i> A vezetővel együtt mozgó szabad elektronokra a mágneses mező Lorentz-erőt fejt ki ($F_{\\text{L}} = e \\cdot v \\cdot B$). Ez az erő az elektronokat a vezető egyik vége felé hajtja, ahol elektronfelesleg (negatív pólus), a másik végén elektronhiány (pozitív pólus) alakul ki. A töltésszétválás miatt egy belső elektrosztatikus mező jön létre ($F_{\\text{el}} = e \\cdot E$). A folyamat addig tart, míg a két erő egyensúlyba nem kerül: $e \\cdot E = e \\cdot v \\cdot B \\rightarrow E = v \\cdot B$. Homogén mezőben egy $l$ hosszúságú, merőlegesen mozgó vezető két vége között kialakuló indukált feszültség: $\\varepsilon_{\\text{ind}} = B \\cdot l \\cdot v$.<br>
+        • <b>Nyugalmi indukció:</b> Akkor lép fel, ha a vezető nyugalomban van, de a környező mágneses tér időben változik (pl. egy tekercsbe mágnest mozgatunk, vagy egy másik tekercsben változtatjuk az áramot). A fluxusváltozás miatt a térben egy <b>örvényes elektromos mező</b> indukálódik, melynek erővonalai önmagukba záródó körök (ellentétben az elektrosztatikus mezővel, ami örvénymentes).
+      </div>
+      <div class="block biz">
+        <div class="step-label">Lenz törvénye és az önindukció</div>
+        • <b>Lenz törvénye (Az energiamegmaradás következménye):</b> Az indukált áram iránya mindig olyan, hogy mágneses mezőjével <b>akadályozza az őt létrehozó változást</b>. (Ezért szerepel a negatív előjel Faraday törvényében). Ha egy tekercsbe mágnest tolunk, a tekercsben olyan irányú áram indukálódik, ami ugyanolyan pólust hoz létre a közeledő oldalon, így taszítóerővel akadályozza a betolást. A mechanikai munka alakul át az indukált áram elektromos energiájává.<br>
+        • <b>Önindukció:</b> Ha egy tekercsben megváltoztatjuk az áramerősséget, a tekercs saját árama által keltett mágneses tér (és így a saját fluxusa) is megváltozik. Ez a saját fluxusváltozás a tekercsben feszültséget indukál, amely Lenz törvénye miatt akadályozza az alapáram változását (bekapcsoláskor késlelteti az áram felfutását, kikapcsoláskor fenn akarja tartani az áramot, ami hatalmas feszültségtüskét és szikrát okozhat). Az indukált feszültség: $\\varepsilon_{\\text{önind}} = - L \\cdot (dI/dt)$, ahol $L$ a tekercs saját <i>induktivitása</i> (egysége: Henry [H]).
+      </div>
+      <div class="block app">
+        <div class="step-label">Generátorok, váltakozó áram és transzformátorok</div>
+        • <b>A váltakozó áramú generátor:</b> Olyan forgógép, amely mechanikai munkát alakít át váltakozó áramú elektromos energiává. Működési elve a mozgási indukción alapul: homogén mágneses mezőben állandó $\\omega$ szögsebességgel forgatunk egy $N$ menetszámú, $A$ keresztmetszetű vezető keretet. A kereten átmenő fluxus időfüggvénye: $\\Phi(t) = B \\cdot A \\cdot \\cos(\\omega \\cdot t)$. A Faraday-törvény alapján az indukált feszültség szinuszos időfüggést mutat:
+        $$u(t) = -N \\cdot \\frac{d\\Phi}{dt} = N \\cdot B \\cdot A \\cdot \\omega \\cdot \\sin(\\omega \\cdot t) = U_{\\text{max}} \\cdot \\sin(\\omega \\cdot t)$$
+        • <b>A váltakozó áram fogalma és jellemzői:</b> Olyan áram, amelynek nagysága és iránya periodikusan változik az időben. Jellemzői az $U_{\\text{max}}$ csúcsérték és az <b>effektív érték</b>. A váltakozó áram effektív értéke ($I_{\\text{eff}}$ vagy $U_{\\text{eff}}$) megegyezik annak az egyenáramnak az értékével, amely ugyanazon az ellenálláson ugyanannyi idő alatt ugyanakkora Joule-hőt (termikus teljesítményt) termel. Szinuszos áram esetén:
+        $$U_{\\text{eff}} = \\frac{U_{\\text{max}}}{\\sqrt{2}} \\quad I_{\\text{eff}} = \\frac{I_{\\text{max}}}{\\sqrt{2}}$$
+        • <b>A transzformátor:</b> Váltakozó feszültség átalakítására szolgáló statikus berendezés, amely a nyugalmi indukció elvén működik. Egy közös zárt vasmagra tekert <i>primer</i> ($N_1$ menetszámú) és <i>szekunder</i> ($N_2$ menetszámú) tekercsből áll. A primer tekercsre kapcsolt $U_1$ váltakozó feszültség a vasmagban változó mágneses fluxust hoz létre, amely a szekunder tekercsben feszültséget indukál. Terheletlen (üresjárati) állapotban a feszültségek aránya megegyezik a menetszámok arányával:
+        $$\\frac{U_2}{U_1} = \\frac{N_2}{N_1}$$
+        • <b>Az elektromos energia szállítása:</b> A távvezetékekben folyó áram Joule-hőt termel, ami veszteséget jelent ($P_{\\text{veszteség}} = I^2 \\cdot R_{\\text{vezeték}}$). Mivel a szállított összteljesítmény $P = U \\cdot I$, ha a feszültséget ($U$) egy transzformátor segítségével a százszorosára növeljük (feltranszformálás), az áramerősség ($I$) a századrészére csökken. Így a vezetékben keletkező veszteség a <i>tízezred részére</i> ($1/100^2$) csökken! Ezért szállítják az energiát nagyfeszültségen ($120 - 400 \\, \\text{kV}$), majd a fogyasztóknál visszatranszformálják $230 \\, \\text{V}$-ra.<br>
+        • <b>Váltakozó áramú motorok:</b> Olyan gépek, amelyek az elektromos energiát mechanikai munkává alakítják. Alapelvük: a háromfázisú váltakozó áram a motor állórészében (stator) egy forgó mágneses mezőt hoz létre. Ez a forgó mező áramot indukál a forgórészben (rotor), amelyre így Ampere-erő (forgatónyomaték) hat, és forgásba hozza azt (indukciós vagy aszinkron motor).
+      </div>`
+  }
+];
+
+const tocContainer = document.getElementById('toc');
+const contentContainer = document.getElementById('content-container');
+
+// A tartalom generálása és a tartalomjegyzék felépítése egyszerre
+sections.forEach(s => {
+  // Tartalomjegyzék elem
+  const li = document.createElement('li');
+  li.className = 'toc-item';
+  li.innerHTML = `<a href="#section-${s.id}"><span class="dot"></span>${s.title}</a>`;
+  tocContainer.appendChild(li);
+
+  // Teljes elméleti blokk
+  const sectionElement = document.createElement('section');
+  sectionElement.className = 'section-card';
+  sectionElement.id = 'section-' + s.id;
+  sectionElement.innerHTML = `
+    <h2 class="section-title">${s.title}</h2>
+    <div>${s.content}</div>
+  `;
+  contentContainer.appendChild(sectionElement);
+});
+
+// MathJax renderelés indítása az aszinkron betöltés után
+window.addEventListener('load', () => {
+  if (typeof MathJax !== 'undefined') {
+    MathJax.typesetPromise([contentContainer]);
+  }
+});
+</script>
+</body>
+</html>

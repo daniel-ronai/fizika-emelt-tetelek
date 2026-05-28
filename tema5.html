@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fizika Emelt</title>
+
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      processEscapes: true
+    }
+  };
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --text: #0f172a;
+    --muted: #475569;
+    --border: #e2e8f0;
+    
+    /* Letisztult, fókuszált fizika színpaletta */
+    --def-border: #6366f1; --def-bg: #f5f3ff; --def-text: #4338ca;
+    --thm-border: #0ea5e9; --thm-bg: #f0f9ff; --thm-text: #0369a1;
+    --biz-border: #f97316; --biz-bg: #fff7ed; --biz-text: #c2410c;
+    --app-border: #10b981; --app-bg: #ecfdf5; --app-text: #047857;
+    
+    --radius: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding: 40px 16px 80px;
+  }
+
+  .wrapper {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  /* Navigáció */
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    margin-bottom: 24px;
+    transition: all 0.2s;
+  }
+  .back-btn:hover { color: var(--text); background: #f1f5f9; }
+
+  /* Tétel Fejléc */
+  header {
+    background: var(--surface);
+    padding: 32px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    margin-bottom: 32px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    background: #f1f5f9;
+    color: var(--muted);
+    padding: 6px 14px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+  }
+
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+  }
+
+  .subtitle {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* Gyorsmenü / Tartalomjegyzék */
+  .toc-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 32px;
+  }
+  .toc-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+    letter-spacing: 0.05em;
+  }
+  .toc-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    list-style: none;
+  }
+  .toc-item a {
+    font-size: 14px;
+    color: var(--muted);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.15s;
+  }
+  .toc-item a:hover { color: var(--text); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); display: inline-block; }
+  .toc-item a:hover .dot { background: var(--thm-border); }
+
+  /* Tanulási szakaszok */
+  .section-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin-bottom: 32px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.01);
+    scroll-margin-top: 20px;
+  }
+
+  .section-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* Speciális Fizika Blokkok */
+  .block {
+    border-left: 4px solid var(--border);
+    padding: 16px 20px;
+    margin: 20px 0;
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  
+  .block.def { border-left-color: var(--def-border); background: var(--def-bg); }
+  .block.thm { border-left-color: var(--thm-border); background: var(--thm-bg); }
+  .block.biz { border-left-color: var(--biz-border); background: var(--biz-bg); }
+  .block.app { border-left-color: var(--app-border); background: var(--app-bg); }
+
+  .step-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+  .block.def .step-label { color: var(--def-text); }
+  .block.thm .step-label { color: var(--thm-text); }
+  .block.biz .step-label { color: var(--biz-text); }
+  .block.app .step-label { color: var(--app-text); }
+
+  /* Szövegformázás */
+  b { font-weight: 600; color: #000; }
+  ul, ol { margin-left: 20px; margin-top: 8px; }
+  li { margin-bottom: 6px; }
+
+  footer {
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 60px;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+  <a href="index.html" class="back-btn">← Főoldal</a>
+  
+  <header>
+    <div class="badge">Fizika • 5. Témakör</div>
+    <h1 id="main-title">Hullámok, kommunikáció, fény</h1>
+    <p class="subtitle" id="main-subtitle">A mechanikai és elektromágneses hullámok tulajdonságai, a geometriai és hullámoptika törvényei, valamint a modern kommunikáció és látás fizikai alapjai</p>
+  </header>
+
+  <div class="toc-box">
+    <div class="toc-title">Navigáció a tétel részei között</div>
+    <ul class="toc-list" id="toc"></ul>
+  </div>
+
+  <main id="content-container"></main>
+
+  <footer></footer>
+</div>
+
+<script>
+// A tétel minden kártyanyitogatás nélkül, logikus folyószövegként, de szigorúan tipografizálva
+const sections = [
+  {
+    id: 0,
+    title: "Mechanikai hullámok, a hang és a hangszerek",
+    content: `
+      <div class="block def">
+        <div class="step-label">A mechanikai hullám fogalma és alapvető jellemzői</div>
+        A mechanikai hullám rugalmas közegben időben és térben továbberjedő állapotváltozás (zavar), amely <b>energiát szállít</b> anélkül, hogy a közeg részecskéi tartósan elmozdulnának a helyükről (tömegszállítás nincs, csak rezgésállapot-átadás).<br>
+        • <b>Transzverzális hullám:</b> A részecskék a terjedési irányra merőlegesen rezegnek (pl. kifeszített kötél hullámai, szilárd testek felülete).<br>
+        • <b>Longitudinális hullám:</b> A részecskék a terjedési iránnyal párhuzamosan rezegnek, sűrűsödések és ritkulások váltják egymást (pl. hanghullámok gázokban, spirálrugó hosszirányú rezgése).<br>
+        • <b>Alapvető összefüggés:</b> $v = f \\cdot \\lambda$, ahol $v$ a terjedési sebesség (közegfüggő), $f$ a frekvencia (forrásfüggő), $\\lambda$ pedig a hullámhossz.
+      </div>
+      <div class="block thm">
+        <div class="step-label">A hullámok alapvető terjedési tulajdonságai</div>
+        • <b>Visszaverődés (Reflexió):</b> Ha a hullám új közeg határához ér, arról visszaverődik. A visszaverődési szög egyenlő a beesési szöggel.<br>
+        • <b>Törés (Refrakció):</b> Új közegbe lépve a terjedési sebesség megváltozása miatt a hullám iránya megtörik.<br>
+        • <b>Elhajlás (Diffrakció):</b> Ha a hullám a hullámhosszához mérhető nagyságú résen vagy akadályon halad át, behatol az árnyéktérbe, azaz görbült vonalú pályán terjed tovább.<br>
+        • <b>Interferencia:</b> Két vagy több találkozó hullám szuperpozíciója (összeadódása). Ha a fázisuk megegyezik, <i>maximálisan erősítik</i>, ha ellentétes fázisúak, <i>gyengítik vagy kioltják</i> egymást.
+      </div>
+      <div class="block biz">
+        <div class="step-label">Állóhullámok kialakulása és feltételei</div>
+        Állóhullám azonos frekvenciájú és amplitúdójú, egymással szemben haladó hullámok interferenciájakor alakul ki (például egy rögzített végű kötélről visszaverődő hullám és a szembejövő hullám találkozásakor). Az állóhullám nem szállít energiát.<br>
+        Jellemző pontjai a <b>duzzadóhelyek</b> (maximális amplitúdó) és a <b>csomópontok</b> (permanens nyugalom). Két szomszédos csomópont távolsága a hullámhossz fele ($\\lambda / 2$).<br>
+        • <b>Mindkét végén rögzített kötél (vagy mindkét végén zárt/nyitott síp):</b> Csak olyan állóhullám alakulhat ki, ahol a kötél hossza ($L$) a félhullámhossz egész számú többszöröse:
+        $$L = n \\cdot \\frac{\\lambda_n}{2} \\quad \\rightarrow \\quad f_n = n \\cdot \\frac{v}{2L} \\quad (n = 1, 2, 3, \\dots)$$
+      </div>
+      <div class="block app">
+        <div class="step-label">A hang fizikai tulajdonságai és a hangszerek</div>
+        A hang longitudinális mechanikai hullám. Emberi füllel érzékelhető tartománya: $20 \\, \\text{Hz} - 20 \\, \\text{kHz}$. Ezen alatta infrahang, felette ultrahang található. Objektív fizikai jellemzői és szubjektív fiziológiai megfelelőik:<br>
+        • Frekvencia $\\rightarrow$ Hangmagasság<br>
+        • Amplitúdó (energiamegmaradás/intenzitás) $\\rightarrow$ Hangerő<br>
+        • Felhangok spektruma $\\rightarrow$ Hangszín (ez alapján különböztetjük meg a hangszereket).<br>
+        <b>Hangszerek működése:</b> Minden hangszer tartalmaz egy <i>generátort</i> (rezgéskeltő: húr, sípban lévő légoszlop, nád) és egy <i>rezonátort</i> (hangszertest), amely a keltett állóhullámok közül a hangszer geometriájára jellemző sajátfrekvenciákat felerősíti és a környező levegőnek átadja.
+      </div>`
+  },
+  {
+    id: 1,
+    title: "Geometriai optika, leképezések és optikai eszközök",
+    content: `
+      <div class="block thm">
+        <div class="step-label">A geometriai optika alapelvei és az árnyékjelenségek</div>
+        A geometriai (sugár-) optika a fényt olyan fénysugarakkal modellezi, amelyek homogén közegben <b>egyenes vonalban terjednek</b>. Ez a modell akkor érvényes, ha a fény útjába eső tárgyak mérete sokkal nagyobb a fény hullámhosszánál ($d \\gg \\lambda$).<br>
+        • <b>Árnyékjelenségek:</b> Ha a fényvonal útját egy átlátszatlan test elzárja, mögötte árnyéktér keletkezik. Kiterjedt fényforrás esetén éles határú <i>teljes árnyék</i> (ahova egyáltalán nem jut fény) és halványabb <i>félárnyék</i> (ahova a fényforrás egy részéből jut fény) alakul ki. Ez magyarázza a Nap- és Holdfogyatkozást.
+      </div>
+      <div class="block def">
+        <div class="step-label">A visszaverődés és a törés törvényei</div>
+        Ha a fény két közeg határfelületéhez ér, egy része visszaverődik, másik része belép az új közegbe.<br>
+        • <b>Visszaverődés törvénye:</b> A beeső sugár, a beesési merőleges és a visszavert sugár egy síkban van. A beesési szög ($\\alpha$) megegyezik a visszaverődési szöggel ($\\alpha'$): $\\alpha = \alpha'$.<br>
+        • <b>Törés törvénye (Snellius–Descartes-törvény):</b> A beeső sugár, a beesési merőleges és a megtört sugár egy síkban van. A beesési szög szinuszának és a törési szög szinuszának aránya a két közeg terjedési sebességeinek arányával egyenlő, ami megegyezik a relatív törésmutatóval ($n_{21}$):
+        $$\\frac{\\sin \\alpha}{\\sin \\beta} = \\frac{v_1}{v_2} = \\frac{n_2}{n_1} = n_{21}$$
+        Ahol $n = c/v$ a közeg abszolút törésmutatója ($c$ a vákuum-fénysebesség).
+      </div>
+      <div class="block biz">
+        <div class="step-label">A teljes visszaverődés (Totálreflexió) fogalma</div>
+        Ha a fény optikailag sűrűbb közegből ($n_1 > n_2$, pl. üvegből vízbe) halad ritkább közeg felé, a törési szög nagyobb, mint a beesési szög ($\\beta > \\alpha$). Növelve a beesési szöget, elérünk egy $\\alpha_{\\text{h}}$ <b>határszöget</b>, amelynél a törési szög pontosan $90^\\circ$ lesz (a fény a határfelületen suhan végbe):
+        $$\\sin \\alpha_{\\text{h}} = \\frac{n_2}{n_1}$$
+        Ha a beesési szög ennél nagyobb ($\\alpha > \\alpha_{\\text{h}}$), a fény egyáltalán nem lép be a második közegbe, hanem 100%-ban visszaverődik a határfelületről. <b>Gyakorlati alkalmazás:</b> Optikai üvegszálak (adatátvitel, endoszkópia), prizmás távcsövek, valamint a délibáb jelensége.
+      </div>
+      <div class="block app">
+        <div class="step-label">Gömbtükrök és vékony lencsék leképezése</div>
+        A gömbfelületű optikai eszközök a fénysugarak fókuszálásával képet alkotnak. Tengelyközeli (paraxiális) sugarakra érvényes a **leképezési egyenlet**:
+        $$\\frac{1}{f} = \\frac{1}{t} + \\frac{1}{k}$$
+        Ahol $f$ a fókusztávolság, $t$ a tárgytávolság, $k$ a képtávolság. A lencse törőereje (dioptria): $D = 1/f$ ($1 \\, \\text{m}^{-1}$).<br>
+        • <b>Gyűjtőrendszerek (homorú tükör, domború lencse):</b> $f > 0$. Valódi és látszólagos, egyenes és fordított állású képet is adhatnak a tárgy helyzetétől függően.<br>
+        • <b>Szórórendszerek (domború tükör, homorú lencse):</b> $f < 0$. Mindig kicsinyített, egyenes állású, látszólagos (virtuális) képet hoznak létre.<br>
+        <b>Összetett optikai rendszerek:</b> Több lencse kombinációja. Például a <i>mikroszkóp</i> és a <i>távcső</i> (objektív és okulár rendszere a látószög növelésére), valamint az <i>emberi szem</i> (ahol a szaruhártya és a szemlencse gyűjtőlencseként vetíti a valódi, fordított állású képet a retinára).
+      </div>`
+  },
+  {
+    id: 2,
+    title: "A fény mint elektromágneses hullám és a hullámoptika",
+    content: `
+      <div class="block def">
+        <div class="step-label">Az elektromágneses hullámok és a rezgőkör</div>
+        James Clerk Maxwell elmélete szerint a fény elektromágneses hullám: egymásra merőleges, egymást fenntartó és terjedő transzverzális elektromos és mágneses mezőváltozás. Zárt térben elektromágneses rezgéseket egy **LC-rezgőkör** (párhuzamosan kapcsolt kondenzátor és tekercs) tud kelteni. Sajátfrekvenciáját a Thomson-képlet adja meg:
+        $$f = \\frac{1}{2\\pi \\sqrt{L \\cdot C}}$$
+        Nyitott rezgőkörré (antennává) alakítva az energia elektromágneses hullámként kisugárzódik a térbe. Ez a vezeték nélküli kommunikáció (rádió, Wi-Fi, mobilhálózatok) alapja.
+      </div>
+      <div class="block thm">
+        <div class="step-label">Az elektromágneses spektrum és a fénysebesség</div>
+        Az elektromágneses hullámok frekvenciájuk (vagy vákuum-hullámhosszuk) alapján alkotják a teljes spektrumot. Növekvő frekvencia (és növekvő energia) szerint a sorrend:<br>
+        Rádióhullámok $\\rightarrow$ Mikrohullámok $\\rightarrow$ Infravörös sugárzás $\\rightarrow$ <b>Látható fény</b> ($400 - 800 \\, \\text{nm}$) $\\rightarrow$ Ultraibolya (UV) sugárzás $\\rightarrow$ Röntgen-sugárzás $\\rightarrow$ Gamma-sugárzás.<br>
+        • <b>Fénysebesség:</b> Vákuumban minden elektromágneses hullám az univerzális állandónak számító $c \\approx 3 \\cdot 10^8 \\, \\text{m/s}$ határsebességgel terjed. Mérése történhetett csillagászati módszerrel (Ole Rømer a Jupiter-holdak fogyatkozásával) vagy földi laboratóriumban (Fizeau fogaskerekes, Foucault forgótükrös módszerével). Einstein relativitáselmélete szerint a $c$ a természetben elérhető abszolút maximális határsebesség.
+      </div>
+      <div class="block biz">
+        <div class="step-label">A fény hullámtermészetét bizonyító jelenségek</div>
+        • <b>Polarizáció:</b> Csak transzverzális hullámoknál lép fel. Ha a természetes fényből egy polarizátor segítségével kiválasztunk egyetlen rezgési síkot, polarizált fényt kapunk. Ez közvetlen bizonyítéka annak, hogy a fény transzverzális hullám.<br>
+        • <b>Elhajlás (Diffrakció) és Interferencia:</b> Ha a fény hullámhosszával összemérhető rácsra (optikai rács) esik, a réseken elhajlik, majd a találkozó hullámfrontok interferálnak egymással. A képernyőn sötét és világos (vagy színes) interferenciacsíkok jelennek meg. A maximumok helye optikai rácson: $d \\cdot \\sin \\alpha = n \\cdot \\lambda$.<br>
+        • <b>Diszperzió (Fényszóródás):</b> A közegek törésmutatója függ a fény frekvenciájától (színétől). Amikor a fehér fény prizmába lép, a különböző színű komponensek eltérő szögben törnek meg (az ibolya jobban megtörik, mint a vörös), így a fény színeire bomlik. Ez bizonyítja a fehér fény összetett voltát.
+      </div>
+      <div class="block app">
+        <div class="step-label">Fénykibocsátás, elnyelés és a lézer</div>
+        • <b>Kibocsátás és elnyelés (Abszorpció):</b> Az atomok elektronjai diszkrét energiaszinteken tartózkodnak. Ha az elektron egy magasabb szintről alacsonyabbra lép, $E = h \\cdot f$ energiájú fotont bocsát ki (emisszió). Ha külső foton érkezik, annak energiája az elektront magasabb szintre emelheti (elnyelés).<br>
+        • <b>A lézer (Light Amplification by Stimulated Emission of Radiation):</b> Működése az <i>indított (stimulált) emisszión</i> alapul. Egy gerjesztett állapotú atomba érkező foton arra készteti az atomot, hogy kibocsásson egy vele teljesen azonos fázisú, irányú és frekvenciájú másik fotont.<br>
+        <b>A lézert fény egyedülálló tulajdonságai:</b> Monokromatikus (egyszínű), koherens (fázisban egyező), rendkívül kis széttartású (párhuzamos nyaláb) és hatalmas energiasűrűségű. Gyakorlati alkalmazások: vonalkódolvasók, lézeres sebészet, optikai adattárolás, ipari vágás és hegesztés.
+      </div>`
+  }
+];
+
+const tocContainer = document.getElementById('toc');
+const contentContainer = document.getElementById('content-container');
+
+// A tartalom generálása és a tartalomjegyzék felépítése egyszerre
+sections.forEach(s => {
+  // Tartalomjegyzék elem
+  const li = document.createElement('li');
+  li.className = 'toc-item';
+  li.innerHTML = `<a href="#section-${s.id}"><span class="dot"></span>${s.title}</a>`;
+  tocContainer.appendChild(li);
+
+  // Teljes elméleti blokk
+  const sectionElement = document.createElement('section');
+  sectionElement.className = 'section-card';
+  sectionElement.id = 'section-' + s.id;
+  sectionElement.innerHTML = `
+    <h2 class="section-title">${s.title}</h2>
+    <div>${s.content}</div>
+  `;
+  contentContainer.appendChild(sectionElement);
+});
+
+// MathJax renderelés indítása az aszinkron betöltés után
+window.addEventListener('load', () => {
+  if (typeof MathJax !== 'undefined') {
+    MathJax.typesetPromise([contentContainer]);
+  }
+});
+</script>
+</body>
+</html>

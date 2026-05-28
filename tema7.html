@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fizika Emelt</title>
+
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      processEscapes: true
+    }
+  };
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --text: #0f172a;
+    --muted: #475569;
+    --border: #e2e8f0;
+    
+    /* Letisztult, fókuszált fizika színpaletta */
+    --def-border: #6366f1; --def-bg: #f5f3ff; --def-text: #4338ca;
+    --thm-border: #0ea5e9; --thm-bg: #f0f9ff; --thm-text: #0369a1;
+    --biz-border: #f97316; --biz-bg: #fff7ed; --biz-text: #c2410c;
+    --app-border: #10b981; --app-bg: #ecfdf5; --app-text: #047857;
+    
+    --radius: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding: 40px 16px 80px;
+  }
+
+  .wrapper {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  /* Navigáció */
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    margin-bottom: 24px;
+    transition: all 0.2s;
+  }
+  .back-btn:hover { color: var(--text); background: #f1f5f9; }
+
+  /* Tétel Fejléc */
+  header {
+    background: var(--surface);
+    padding: 32px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    margin-bottom: 32px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    background: #f1f5f9;
+    color: var(--muted);
+    padding: 6px 14px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+  }
+
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+  }
+
+  .subtitle {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* Gyorsmenü / Tartalomjegyzék */
+  .toc-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 32px;
+  }
+  .toc-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+    letter-spacing: 0.05em;
+  }
+  .toc-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    list-style: none;
+  }
+  .toc-item a {
+    font-size: 14px;
+    color: var(--muted);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.15s;
+  }
+  .toc-item a:hover { color: var(--text); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); display: inline-block; }
+  .toc-item a:hover .dot { background: var(--thm-border); }
+
+  /* Tanulási szakaszok */
+  .section-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin-bottom: 32px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.01);
+    scroll-margin-top: 20px;
+  }
+
+  .section-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* Speciális Fizika Blokkok */
+  .block {
+    border-left: 4px solid var(--border);
+    padding: 16px 20px;
+    margin: 20px 0;
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  
+  .block.def { border-left-color: var(--def-border); background: var(--def-bg); }
+  .block.thm { border-left-color: var(--thm-border); background: var(--thm-bg); }
+  .block.biz { border-left-color: var(--biz-border); background: var(--biz-bg); }
+  .block.app { border-left-color: var(--app-border); background: var(--app-bg); }
+
+  .step-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+  .block.def .step-label { color: var(--def-text); }
+  .block.thm .step-label { color: var(--thm-text); }
+  .block.biz .step-label { color: var(--biz-text); }
+  .block.app .step-label { color: var(--app-text); }
+
+  /* Szövegformázás */
+  b { font-weight: 600; color: #000; }
+  ul, ol { margin-left: 20px; margin-top: 8px; }
+  li { margin-bottom: 6px; }
+
+  footer {
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 60px;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+  <a href="index.html" class="back-btn">← Főoldal</a>
+  
+  <header>
+    <div class="badge">Fizika • 7. Témakör</div>
+    <h1 id="main-title">A Világegyetem megismerése</h1>
+    <p class="subtitle" id="main-subtitle">Gravitáció és Csillagászat: A tömegvonzás törvényétől a kozmikus sebességeken át az Ősrobbanásig és a Világegyetem szerkezetéig</p>
+  </header>
+
+  <div class="toc-box">
+    <div class="toc-title">Navigáció a tétel részei között</div>
+    <ul class="toc-list" id="toc"></ul>
+  </div>
+
+  <main id="content-container"></main>
+
+  <footer></footer>
+</div>
+
+<script>
+// A tétel minden kártyanyitogatás nélkül, logikus folyószövegként, de szigorúan tipografizálva
+const sections = [
+  {
+    id: 0,
+    title: "Newtoni gravitáció és a gravitációs térerősség",
+    content: `
+      <div class="block thm">
+        <div class="step-label">A tömegvonzás törvénye</div>
+        Bármely két pontszerű (vagy gömbszimmetrikus eloszlású) test között <b>vonzóerő</b> hat, amely egyenesen arányos a testek tömegének szorzatával, és fordítottan arányos a közöttük lévő távolság négyzetével. Ez a kölcsönhatás univerzális, azaz a Világegyetem minden anyagára érvényes.
+      </div>
+      <div class="block def">
+        <div class="step-label">Matematikai formula és állandók</div>
+        $$F_{\\text{g}} = G \\cdot \\frac{m_1 \\cdot m_2}{r^2}$$
+        Ahol:<br>
+        • $F_{\\text{g}}$: a gravitációs vonzóerő ($\\text{N}$)<br>
+        • $m_1, m_2$: a kölcsönhatásban részt vevő testek tömege ($\\text{kg}$)<br>
+        • $r$: a testek tömegközéppontjainak távolsága ($\\text{m}$)<br>
+        • $G$: az univerzális gravitációs állandó (Cavendish mérte meg először torziós ingával):
+        $$G \\approx 6{,}674 \\cdot 10^{-11} \\, \\frac{\\text{N} \\cdot \\text{m}^2}{\\text{kg}^2}$$
+      </div>
+      <div class="block def">
+        <div class="step-label">A gravitációs térerősség ($g$) mint mezőjellemző</div>
+        A gravitációs mezőt a <b>gravitációs térerősséggel</b> jellemezzük, amely megmutatja a mező adott pontjába helyezett egységnyi tömegű testre ható gravitációs erőt. Iránya mindig a mezőt keltő centrum felé mutat.
+        $$g = \\frac{F_{\\text{g}}}{m} = G \\cdot \\frac{M}{r^2}$$
+        Ahol $M$ a mezőt keltő égitest tömege, $r$ pedig a centrumtól mért távolság. Mértékegysége: $\\frac{\\text{N}}{\\text{kg}}$ vagy $\\text{m}/\\text{s}^2$.
+      </div>`
+  },
+  {
+    id: 1,
+    title: "Földi nehézségi erő, súly és a súlytalanság",
+    content: `
+      <div class="block thm">
+        <div class="step-label">Gravitációs erő vs. Nehézségi erő különbsége</div>
+        A Földön lévő testekre nemcsak a tiszta $F_{\\text{g}}$ gravitációs vonzóerő hat, hanem a bolygó tengely körüli forgása miatti <b>tehetetlenségi centrifugális erő</b> ($F_{\\text{cf}}$) is. E kettő vektoriális eredője a valóságban tapasztalt <b>nehézségi erő</b> ($F_{\\text{n}}$):
+        $$\\vec{F}_{\\text{n}} = \\vec{F}_{\\text{g}} + \\vec{F}_{\\text{cf}}$$
+        Mivel a centrifugális erő az egyenlítőn a legnagyobb és a sarkokon nulla, a nehézségi gyorsulás ($g$) értéke a földrajzi szélesség függvényében változik ($9{,}78 \\, \\text{m}/\\text{s}^2$ és $9{,}83 \\, \\text{m}/\\text{s}^2$ között). Az erő iránya emiatt a sarkok kivételével nem pontosan a Föld geometriai középpontja felé mutat.
+      </div>
+      <div class="block def">
+        <div class="step-label">A súly precíz definíciója</div>
+        A <b>súly</b> ($F_{\\text{s}}$) az az erő, amellyel a test az alátámasztást nyomja vagy a felfüggesztést húzza. <b>Rendkívül fontos elméleti különbség:</b> míg a nehézségi erő távolhatásként közvetlenül a test tömegére hat, addig a súly egy kényszererő (kontaktusból adódó rugalmas ellenhatás), ami az alátámasztó felületre vagy felfüggesztő szálra hat!
+      </div>
+      <div class="block thm">
+        <div class="step-label">A súlytalanság fizikai magyarázata</div>
+        A <b>súlytalanság</b> nem a gravitáció megszűnését jelenti! Súlytalanságról akkor beszélünk, ha a testnek <b>nincs alátámasztása vagy felfüggesztése</b>, azaz szabadon esik. Ha egy test csak a gravitációs (vagy nehézségi) erő hatására gyorsul (pl. egy pályáján kikapcsolt motorral keringő űrhajó), akkor az űrhajó és a benne lévő űrhajós gyorsulása pontosan megegyezik ($a = g$). Mivel együtt esnek a téridőben, nem tudják egymást nyomni, így a kontaktusból származó súly nullává válik ($F_{\\text{s}} = 0$).
+      </div>`
+  },
+  {
+    id: 2,
+    title: "Kozmikus sebességek levezetései",
+    content: `
+      <div class="block biz">
+        <div class="step-label">I. kozmikus sebesség (Körsebesség) levezetése</div>
+        Az a minimális sebesség, amellyel az égitest felszínéről indított test tartósan körpályára állhat. Ekkor a körpályán tartáshoz szükséges centripetális erőt a felszíni gravitációs erő biztosítja ($r = R$):
+        $$F_{\\text{cp}} = F_{\\text{g}} \\implies m \\cdot \\frac{v_1^2}{R} = G \\cdot \\frac{M \\cdot m}{R^2}$$
+        Egyszerűsítés és rendezés után a Föld felszínére ($R \\approx 6370 \\, \\text{km}$):
+        $$v_1 = \\sqrt{\\frac{G \\cdot M}{R}} = \\sqrt{g \\cdot R} \\approx 7{,}9 \\, \\frac{\\text{km}}{\\text{s}}$$
+      </div>
+      <div class="block biz">
+        <div class="step-label">II. kozmikus sebesség (Szökési sebesség) levezetése</div>
+        Az a minimális sebesség, amellyel a test véglegesen elhagyja az égitest gravitációs mezejét. A levezetéshez a <b>mechanikai energia megmaradásának törvényét</b> használjuk. A végtelenben ($r \\rightarrow \\infty$) a mozgási és a potenciális energia is nullává válik:
+        $$E_{\\text{kezdeti}} = E_{\\text{végállapot}}$$
+        $$\\frac{1}{2}m v_2^2 - G \\cdot \\frac{M \\cdot m}{R} = 0$$
+        Kifejezve és $v_1$-gyel összekötve:
+        $$v_2 = \\sqrt{\\frac{2 \\cdot G \\cdot M}{R}} = \\sqrt{2} \\cdot v_1 \\approx 11{,}2 \\, \\frac{\\text{km}}{\\text{s}}$$
+      </div>
+      <div class="block thm">
+        <div class="step-label">III. és IV. kozmikus sebesség fogalma</div>
+        • <b>III. kozmikus sebesség ($v_3 \\approx 16{,}6 \\, \\text{km}/\\text{s}$):</b> A Földről indítva a Naprendszer elhagyásához szükséges sebesség.<br>
+        • <b>IV. kozmikus sebesség ($v_4 \\approx 320 \\, \\text{km}/\\text{s}$):</b> A Tejútrendszer elhagyásához szükséges sebesség a mi pozíciónkból.
+      </div>`
+  },
+  {
+    id: 3,
+    title: "A Naprendszer és a Kepler-törvények",
+    content: `
+      <div class="block thm">
+        <div class="step-label">Kepler-törvények (A kinematikai leírás)</div>
+        1. <b>Kepler I. törvénye:</b> A bolygók olyan ellipszis alakú pályákon keringenek, amelyek egyik gyújtópontjában a Nap helyezkedik el.<br>
+        2. <b>Kepler II. törvénye:</b> A bolygó Naphoz vezető vezérsugara egyenlő idők alatt egyenlő területeket súrol. Ebből következik, hogy a bolygó napközelben (perihélium) gyorsabban mozog, mint naptávolban (afélium). (Mögöttes fizikai ok: a centrális erőtér miatti perdületmegmaradás).<br>
+        3. <b>Kepler III. törvénye:</b> A bolygók keringési idejeinek ($T$) négyzetei úgy aránylanak egymáshoz, mint a pálya nagytengelyeinek ($a$) köbei:
+        $$\\frac{T_1^2}{T_2^2} = \\frac{a_1^3}{a_2^3} \\implies \\frac{a^3}{T^2} = \\text{konstans}$$
+      </div>
+      <div class="block biz">
+        <div class="step-label">A Kepler III. törvény konstansának newtoni magyarázata</div>
+        Feltételezve a körpályát ($a=r$), a gravitációs erő adja a centripetális erőt:
+        $$G \\cdot \\frac{M_{\\text{Nap}} \\cdot m}{r^2} = m \\cdot \\left(\\frac{2\\pi}{T}\\right)^2 \\cdot r$$
+        Átrendezve megkapjuk a konstans fizikai jelentését, ami igazolja, hogy az érték csak a központi test tömegétől függ:
+        $$\\frac{r^3}{T^2} = \\frac{G \\cdot M_{\\text{Nap}}}{4\\pi^2}$$
+      </div>
+      <div class="block app">
+        <div class="step-label">A Naprendszer égitestjeinek osztályozása</div>
+        • <b>Kőzetbolygók:</b> Merkúr, Vénusz, Föld, Mars. Nagy sűrűség, szilárd felszín, kevés hold.<br>
+        • <b>Gázbolygók:</b> Jupiter, Szaturnusz, Uránusz, Neptunusz. Óriási tömeg, gáz/plazma halmazállapot, gyűrűk, kiterjedt holdrendszer.<br>
+        • <b>Kis égitestek:</b> Törpebolygók (Plútó), aszteroidák (főleg a Mars és Jupiter között), üstökösök (erősen elnyúlt pálya, kigázosodás a Nap közelében) és meteoroidok.
+      </div>`
+  },
+  {
+    id: 4,
+    title: "A Nap fizikája és energiatermelése",
+    content: `
+      <div class="block thm">
+        <div class="step-label">A Nap szerkezete</div>
+        A Nap egy G2V osztályú fősorozati csillag. Belülről kifelé haladva: <b>mag</b> (a fúzió helye), <b>sugárzási zóna</b>, <b>konvektív zóna</b> (ahol anyagáramlással szállítódik az energia), majd a légkör: <b>fotoszféra</b> (ezt látjuk szabad szemmel), <b>kromoszféra</b> és a ritka, de forró <b>korona</b>.
+      </div>
+      <div class="block thm">
+        <div class="step-label">A magfúzió (Proton-proton ciklus)</div>
+        A magban uralkodó $15 \\text{ millió K}$ hőmérsékleten és gigantikus nyomáson 4 hidrogénmag ($^1\\text{H}$) egyesül egy héliummaggá ($^4\\text{He}$).
+        $$4 \\, ^1\\text{H} \\rightarrow ^4\\text{He} + 2 \\, \\text{e}^+ + 2 \\, \\nu_{\\text{e}} + \\gamma$$
+        A reakció során fellép a <b>tömegdefektus</b>: a keletkező héliummag tömege picit kisebb ($0{,}7\\%$-kal), mint a 4 hidrogén tömegének összege. Ez a hiányzó $\\Delta m$ tömeg alakul át tiszta energiává az einsteini képlet szerint:
+        $$\\Delta E = \\Delta m \\cdot c^2$$
+        Ez a sugárzási nyomás tart egyensúlyt a Nap saját gravitációs összeomlási törekvésével (hidrosztatikai egyensúly).
+      </div>`
+  },
+  {
+    id: 5,
+    title: "Kozmológia: Ősrobbanás és a Világegyetem szerkezete",
+    content: `
+      <div class="block thm">
+        <div class="step-label">Az Ősrobbanás (Big Bang) elmélete és bizonyítékai</div>
+        A Világegyetem $13{,}8 \\text{ milliárd}$ évvel ezelőtt egy szingularitásból indult, azóta tágul és hűl. Három döntő kísérleti bizonyíték támogatja:<br>
+        1. <b>Hubble-törvény (Vöröseltolódás):</b> A távoli galaxisok színvonalai a vörös felé tolódnak el. A távolodási sebesség ($v$) egyenesen arányos a távolsággal ($d$): $v = H_0 \\cdot d$. Ez magának a térnek a tágulása.<br>
+        2. <b>Kozmikus mikrohullámú háttérsugárzás:</b> Az Ősrobbanás után 380 000 évvel az univerzum átlátszóvá vált. Ennek az "első fénynek" a maradványa ma egy $2{,}73 \\, \\text{K}$-es mindenhonnan izotróp módon érkező mikrohullámú sugárzás.<br>
+        3. <b>Könnyűelem-gyakoriság:</b> A korai Világegyetem primordiális nukleoszintézise pontosan megjósolta a ma megfigyelhető $75\\%$ Hidrogén - $25\\%$ Hélium tömegarányt.
+      </div>
+      <div class="block app">
+        <div class="step-label">A kozmosz nagyléptékű szerkezete</div>
+        A csillagok galaxisokba (pl. a Tejútrendszer spirálgalaxis) tömörülnek. A galaxisok galaxishalmazokat, azok szuperhalmazokat alkotnak. A legnagyobb skálán az univerzum hálózatos szerkezetű: filamentumokból (anyagszálakból) és köztük lévő óriási ürességekből (voidokból) áll.
+      </div>`
+  },
+  {
+    id: 6,
+    title: "A csillagászat vizsgálati módszerei",
+    content: `
+      <div class="block app">
+        <div class="step-label">Elektromágneses megfigyelések</div>
+        • <b>Optikai csillagászat:</b> Lencsés (refraktor) és tükrös (reflektor) távcsövek a látható fény tartományára.<br>
+        • <b>Nem-optikai csillagászat:</b> Rádiótávcsövek (hideg gázfelhők), infravörös távcsövek (porfelhőkön való átlátás), röntgen- és gammatávcsövek (forró gázok, fekete lyukak környezete). Mivel a légkör sok tartományt elnyel, az eszközöket űrtávcsőként (pl. Hubble, James Webb) a világűrbe kell telepíteni.
+      </div>
+      <div class="block app">
+        <div class="step-label">Modern többcsatornás (Multimessenger) csillagászat</div>
+        A modern fizika már nemcsak fotonokat gyűjt:<br>
+        • <b>Neutrínó-csillagászat:</b> A Nap magjából érkező neutrínók közvetlen észlelése hatalmas földalatti detektorokkal (pl. IceCube).<br>
+        • <b>Gravitációs hullámok:</b> Fekete lyukak vagy neutroncsillagok összeolvadásakor a téridő szövete megfodrozódik. Ezt lézerinterferométerekkel (LIGO, VIRGO) mérjük, ami teljesen új ablakot nyitott az univerzumra.
+      </div>`
+  }
+];
+
+const tocContainer = document.getElementById('toc');
+const contentContainer = document.getElementById('content-container');
+
+// A tartalom generálása és a tartalomjegyzék felépítése egyszerre
+sections.forEach(s => {
+  // Tartalomjegyzék elem
+  const li = document.createElement('li');
+  li.className = 'toc-item';
+  li.innerHTML = `<a href="#section-${s.id}"><span class="dot"></span>${s.title}</a>`;
+  tocContainer.appendChild(li);
+
+  // Teljes elméleti blokk
+  const sectionElement = document.createElement('section');
+  sectionElement.className = 'section-card';
+  sectionElement.id = 'section-' + s.id;
+  sectionElement.innerHTML = `
+    <h2 class="section-title">${s.title}</h2>
+    <div>${s.content}</div>
+  `;
+  contentContainer.appendChild(sectionElement);
+});
+
+// MathJax renderelés indítása az aszinkron betöltés után
+window.addEventListener('load', () => {
+  if (typeof MathJax !== 'undefined') {
+    MathJax.typesetPromise([contentContainer]);
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fizika Érettségi Témakörök – Irányítópult</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght=400;500;600;700&display=swap');
+
+  :root {
+    --bg: #f5f4ef;
+    --surface: #ffffff;
+    --border: rgba(0,0,0,0.06);
+    --text: #1a1a18;
+    --muted: #6b6a65;
+    
+    /* A sablonból átemelt színpaletta a vizuális egységért */
+    --purple: #3C3489;   --purple-bg: #EEEDFE;
+    --teal: #085041;     --teal-bg: #E1F5EE;
+    --amber: #633806;    --amber-bg: #FAEEDA;
+    --blue: #0C447C;     --blue-bg: #E6F1FB;
+    
+    --radius: 16px;
+    --radius-sm: 8px;
+    --shadow: 0 4px 20px rgba(0,0,0,0.02);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    padding: 40px 20px;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+  }
+
+  .wrapper {
+    width: 100%;
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  /* Fejléc stílusos kiemelésekkel */
+  header {
+    background: var(--surface);
+    padding: 32px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Felső dekoratív színes csík */
+  header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--purple), var(--teal), var(--amber), var(--blue));
+  }
+
+  header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 16px;
+    letter-spacing: -0.5px;
+  }
+
+  /* Tanulás-fókuszú leírás */
+  .intro-text {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .intro-text strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .highlight-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: var(--radius-sm);
+    background: var(--purple-bg);
+    color: var(--purple);
+    width: fit-content;
+  }
+
+  /* Grid elrendezés a fizika témakörök kiterjedtebb tartalmához */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  @media (min-width: 600px) {
+    .grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  /* Csempék a fizika témakörök egyedi tartalmával */
+  .tile {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    text-decoration: none;
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 12px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: var(--shadow);
+  }
+
+  .tile-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .tile span.number {
+    font-size: 22px;
+    font-weight: 700;
+    transition: transform 0.25s ease;
+  }
+
+  .tile span.count {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    background: #f0efe9;
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+  }
+
+  .tile h2 {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-top: 4px;
+  }
+
+  .tile .preview-tags {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+    text-align: left;
+    border-top: 1px dashed var(--border);
+    padding-top: 10px;
+    margin-top: 4px;
+  }
+
+  /* Dinamikus színes hover állapotok (csoportok szerint) */
+  .tile.group-0:hover { border-color: var(--purple); background: var(--purple-bg); }
+  .tile.group-0:hover .number { color: var(--purple); transform: translateX(4px); }
+
+  .tile.group-1:hover { border-color: var(--teal); background: var(--teal-bg); }
+  .tile.group-1:hover .number { color: var(--teal); transform: translateX(4px); }
+
+  .tile.group-2:hover { border-color: var(--amber); background: var(--amber-bg); }
+  .tile.group-2:hover .number { color: var(--amber); transform: translateX(4px); }
+
+  .tile.group-3:hover { border-color: var(--blue); background: var(--blue-bg); }
+  .tile.group-3:hover .number { color: var(--blue); transform: translateX(4px); }
+
+  /* Footer dizájn */
+  footer {
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 20px;
+    border-top: 1px solid var(--border);
+    padding-top: 20px;
+  }
+
+  footer .author {
+    font-weight: 600;
+    color: var(--text);
+    background: #e2e1da;
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    margin-left: 4px;
+  }
+
+  .source-link {
+    color: var(--text);
+    text-decoration: underline;
+    font-weight: 500;
+  }
+
+  @media (max-width: 480px) {
+    body { padding: 20px 12px; }
+    .grid { grid-template-columns: 1fr; gap: 12px; }
+    header { padding: 24px; }
+    header h1 { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+  <header>
+    <div class="highlight-badge">Érettségi Felkészülés</div>
+    <h1>Fizika Emelt Érettségi Témakörök</h1>
+    <div class="intro-text">
+      <p>Összeraktam ezt az irányítópultot a fizika "B" elméleti feladatokhoz. Innen közvetlenül eléred mind a 7 átfogó témakört. Teljesen mobilbarát, letisztult struktúra, hogy bárhol kényelmesen át tudd ismételni az anyagot.</p>
+      <p><strong>Egy gyors tipp:</strong> A fizika szóbelin a definíciók pontos ismerete mellett a grafikonok értelmezése és a kísérleti/gyakorlati alkalmazások hozzák a legtöbb pontot. Ne csak a képleteket pörgesd, lásd a jelenséget mögöttük!</p>
+    </div>
+  </header>
+
+  <div class="grid" id="fizikaGrid"></div>
+
+  <footer>
+    <p>Készítette és rendszerezte: <span class="author">R. D.</span> • Sikeres felkészülést!</p>
+    
+    <div style="margin-top: 15px; font-size: 11px; color: var(--muted); line-height: 1.5; text-align: justify; border-top: 1px dashed var(--border); padding-top: 12px;">
+      <b>Forrásmegjelölés & Jogi duma:</b> Az oldal tartománya Almási László, a Pécsi Lővey Klára Gimnázium szaktanárának hivatalos fizika érettségi segédanyagai (<a href="https://leowey.pe.hu/fizika/erettsegi" class="source-link" target="_blank" rel="noopener">leowey.pe.hu/fizika/erettsegi</a>) alapján készült. 
+      Bár a digitalizálás a legnagyobb odafigyeléssel történt, a kódba és a szövegekbe csúszhattak hibák vagy elütések. 
+      Ebből kifolyólag sem a forrásanyagok készítői, sem én (mint az oldal készítője) nök nem vállalunk semmilyen garanciát vagy felelősséget az adatok pontosságáért, hiányosságaiért, vagy a nem megfelelő használatból (pl. be nem jött tételekből) eredő esetleges érettségi kudarcokért és károkért. Használd okosan, ellenőrizd a képleteket!
+    </div>
+  </footer>
+</div>
+
+<script>
+  const grid = document.getElementById('fizikaGrid');
+  
+  // A 7 fizika témakör pontos adatai és kulcsszavai a követelmények alapján
+  const temakorok = [
+    {
+      id: 1,
+      title: "1. Mozgás és egyensúly",
+      count: "5 tétel",
+      tags: "Egyenes vonalú mozgások, Hajítások, Körmozgás, Harmonikus rezgőmozgás, Newton törvényei, Erőtörvények, Merev testek egyensúlya, Egyszerű gépek, Forgásdinamika."
+    },
+    {
+      id: 2,
+      title: "2. Energia, munka, hő",
+      count: "2 tétel",
+      tags: "Munkatétel, Hőtágulás, Kalorimetria, Gáztörvények, Ideális gázok, A termodinamika I. és II. főtétele, Állapotváltozások, Halmazállapot-változások."
+    },
+    {
+      id: 3,
+      title: "3. Víz, levegő, környezet",
+      count: "2 tétel",
+      tags: "Hidrosztatikai nyomás, Pascal és Arkhimédész törvénye, Úszás, Felületi feszültség, Bernoulli-törvény, Közegellenállás, Hőterjedés, Üvegházhatás, Ózonpajzs."
+    },
+    {
+      id: 4,
+      title: "4. Elektromágnesesség",
+      count: "4 tétel",
+      tags: "Coulomb-törvény, Elektromos tér, Kondenzátorok, Mágneses mező, Lorentz-erő, Ohm törvénye, Elektrolízis, Váltakozó áram, Elektromágneses indukció, Transzformátor."
+    },
+    {
+      id: 5,
+      title: "5. Hullámok, kommunikáció, fény",
+      count: "3 tétel",
+      tags: "Mechanikai hullámok, Interferencia, Akusztika, Geometriai optika, Tükrök és lencsék, Hullámoptika, Polarizáció, Fénysebesség, Lézer."
+    },
+    {
+      id: 6,
+      title: "6. Atomfizika, magfizika",
+      count: "2 tétel",
+      tags: "Rutherford-szórás, Atommodellek, Anyaghullámok, Fotoeffektus, Tömegdefektus, Radioaktivitás, Maghasadás, Láncreakció, Reaktorok, Sugárzásmérés."
+    },
+    {
+      id: 7,
+      title: "7. A Világegyetem megismerése",
+      count: "2 tétel",
+      tags: "Egyetemes tömegvonzás, Gravitációs tér, Súlytalanság, Kozmikus sebességek, Naprendszer, Kepler-törvények, Csillagászat, Ősrobbanás."
+    }
+  ];
+
+  // Csempék generálása a 4 színcsoport ciklikus elosztásával a mintád alapján
+  temakorok.forEach((tema) => {
+    const link = document.createElement('a');
+    link.href = `tema${tema.id}.html`;
+    
+    const colorGroup = tema.id % 4; 
+    link.className = `tile group-${colorGroup}`;
+    
+    link.innerHTML = `
+      <div class="tile-meta">
+        <span class="number">Témakör ${tema.id} &rarr;</span>
+        <span class="count">${tema.count}</span>
+      </div>
+      <h2>${tema.title.split('. ')[1]}</h2>
+      <div class="preview-tags">
+        ${tema.tags}
+      </div>
+    `;
+    grid.appendChild(link);
+  });
+</script>
+
+</body>
+</html>

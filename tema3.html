@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fizika Emelt</title>
+
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      processEscapes: true
+    }
+  };
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --text: #0f172a;
+    --muted: #475569;
+    --border: #e2e8f0;
+    
+    /* Letisztult, fókuszált fizika színpaletta */
+    --def-border: #6366f1; --def-bg: #f5f3ff; --def-text: #4338ca;
+    --thm-border: #0ea5e9; --thm-bg: #f0f9ff; --thm-text: #0369a1;
+    --biz-border: #f97316; --biz-bg: #fff7ed; --biz-text: #c2410c;
+    --app-border: #10b981; --app-bg: #ecfdf5; --app-text: #047857;
+    
+    --radius: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding: 40px 16px 80px;
+  }
+
+  .wrapper {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  /* Navigáció */
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    margin-bottom: 24px;
+    transition: all 0.2s;
+  }
+  .back-btn:hover { color: var(--text); background: #f1f5f9; }
+
+  /* Tétel Fejléc */
+  header {
+    background: var(--surface);
+    padding: 32px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    margin-bottom: 32px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    background: #f1f5f9;
+    color: var(--muted);
+    padding: 6px 14px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+  }
+
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+  }
+
+  .subtitle {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* Gyorsmenü / Tartalomjegyzék */
+  .toc-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 32px;
+  }
+  .toc-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+    letter-spacing: 0.05em;
+  }
+  .toc-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    list-style: none;
+  }
+  .toc-item a {
+    font-size: 14px;
+    color: var(--muted);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.15s;
+  }
+  .toc-item a:hover { color: var(--text); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); display: inline-block; }
+  .toc-item a:hover .dot { background: var(--thm-border); }
+
+  /* Tanulási szakaszok */
+  .section-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin-bottom: 32px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.01);
+    scroll-margin-top: 20px;
+  }
+
+  .section-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* Speciális Fizika Blokkok */
+  .block {
+    border-left: 4px solid var(--border);
+    padding: 16px 20px;
+    margin: 20px 0;
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  
+  .block.def { border-left-color: var(--def-border); background: var(--def-bg); }
+  .block.thm { border-left-color: var(--thm-border); background: var(--thm-bg); }
+  .block.biz { border-left-color: var(--biz-border); background: var(--biz-bg); }
+  .block.app { border-left-color: var(--app-border); background: var(--app-bg); }
+
+  .step-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+  .block.def .step-label { color: var(--def-text); }
+  .block.thm .step-label { color: var(--thm-text); }
+  .block.biz .step-label { color: var(--biz-text); }
+  .block.app .step-label { color: var(--app-text); }
+
+  /* Szövegformázás */
+  b { font-weight: 600; color: #000; }
+  ul, ol { margin-left: 20px; margin-top: 8px; }
+  li { margin-bottom: 6px; }
+
+  footer {
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 60px;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+  <a href="index.html" class="back-btn">← Főoldal</a>
+  
+  <header>
+    <div class="badge">Fizika • 3. Témakör</div>
+    <h1 id="main-title">A folyadékok és gázok mechanikája, környezetünk fizikai jelenségei</h1>
+    <p class="subtitle" id="main-subtitle">A hidrosztatika és áramlástan törvényei, a felületi jelenségek, valamint a légkör termodinamikai folyamatai és a globális éghajlatváltozás fizikai háttere</p>
+  </header>
+
+  <div class="toc-box">
+    <div class="toc-title">Navigáció a tétel részei között</div>
+    <ul class="toc-list" id="toc"></ul>
+  </div>
+
+  <main id="content-container"></main>
+
+  <footer></footer>
+</div>
+
+<script>
+// A tétel minden kártyanyitogatás nélkül, logikus folyószövegként, de szigorúan tipografizálva
+const sections = [
+  {
+    id: 0,
+    title: "Folyadékok és gázok mechanikája (Hidrosztatika és aerodinamika)",
+    content: `
+      <div class="block def">
+        <div class="step-label">A nyomás fogalma, a hidrosztatikai nyomás és Pascal törvénye</div>
+        • <b>A nyomás fogalma:</b> A nyomóerő ($F_{\\text{ny}}$) és a nyomott felület ($A$) nagyságának aránya. Skaláris mennyiség, amely a felület minden pontjára merőlegesen hat:
+        $$p = \\frac{F_{\\text{ny}}}{A} \\quad \\left[ \\text{Egysége: Pascal (Pa) } = \\frac{\\text{N}}{\\text{m}^2} \\right]$$
+        • <b>Hidrosztatikai nyomás:</b> A folyadékok és gázok súlyából származó nyomás. Egy $d_{\\text{f}}$ sűrűségű, homogén folyadékoszlop alján a felszíntől mért $h$ mélységben ható nyomás értéke a folyadékoszlop súlyának ($G = m \\cdot g = d_{\\text{f}} \\cdot V \\cdot g = d_{\\text{f}} \\cdot A \\cdot h \\cdot g$) levezetéséből adódik:
+        $$p_{\\text{hidr}} = d_{\\text{f}} \\cdot g \\cdot h$$
+        A teljes nyomás a folyadékban a külső légköri nyomás ($p_0$) és a hidrosztatikai nyomás összege: $p_{\\text{teljes}} = p_0 + d_{\\text{f}} \\cdot g \\cdot h$.<br>
+        • <b>Pascal törvénye:</b> Zárt edényben lévő folyadékra vagy gázra gyakorolt külső nyomás a folyadék vagy gáz minden pontjára gyengítetlenül és minden irányban ugyanakkora nagyságban terjed tovább. Gyakorlati alkalmazása a <i>hidraulikus sajtó</i> és a hidraulikus fékrendszerek: mivel a nyomás mindkét dugattyúnál azonos ($p = F_1 / A_1 = F_2 / A_2$), a nagyobb felületű dugattyún sokszorosan nagyobb erő nyerhető:
+        $$F_2 = F_1 \\cdot \\frac{A_2}{A_1}$$
+      </div>
+      <div class="block biz">
+        <div class="step-label">A felhajtóerő levezetése és Arkhimédész törvénye</div>
+        Ha egy testet folyadékba vagy gázba merítünk, rá a környező közeg felfelé mutató <b>felhajtóerőt</b> ($F_{\\text{f}}$) fejt ki. <br><br>
+        <i>Matematikai levezetés (hasáb alakú testre):</i> Vegyünk egy $A$ alapfelületű, $l$ magasságú hasábot $d_{\\text{f}}$ sűrűségű folyadékban. A hasáb teteje $h_1$ mélységben van, ott a felülről ható nyomóerő: $F_1 = p_1 \\cdot A = d_{\\text{f}} \\cdot g \\cdot h_1 \\cdot A$. A hasáb alja $h_2 = h_1 + l$ mélységben van, ott az alulról felfelé ható nyomóerő: $F_2 = p_2 \\cdot A = d_{\\text{f}} \\cdot g \\cdot (h_1 + l) \\cdot A$. Az oldallapokra ható erők szimmetrikusan kioltják egymást. Az eredő függőleges erő a felhajtóerő:
+        $$F_{\\text{f}} = F_2 - F_1 = d_{\\text{f}} \\cdot g \\cdot A \\cdot (h_1 + l) - d_{\\text{f}} \\cdot g \\cdot A \\cdot h_1 = d_{\\text{f}} \\cdot g \\cdot A \\cdot l = d_{\\text{f}} \\cdot g \\cdot V_{\\text{b}}$$
+        Ahol $V_{\\text{b}} = A \\cdot l$ a test folyadékba merülő részének térfogata. Ebből következik <b>Arkhimédész törvénye</b>: Minden folyadékba vagy gázba merülő testre felfelé mutató felhajtóerő hat, amelynek nagysága megegyezik a test által kiszorított közeg súlyával.<br><br>
+        • <b>Folyadékba merülő testek viselkedése (A test sűrűsége: $d_{\\text{test}}$):</b><br>
+        1. <i>Úszás:</i> Ha $d_{\\text{test}} < d_{\\text{f}}$, a test nem merül el teljesen. Nyugalomban a súlya és a felhajtóerő egyenlő ($G = F_{\\text{f}}$), a test térfogatának csak egy része ($d_{\\text{test}} / d_{\\text{f}}$ arányban) van a felszín alatt.<br>
+        2. <i>Lebegés:</i> Ha $d_{\\text{test}} = d_{\\text{f}}$, a test a folyadék bármely pontján egyensúlyban van, teljesen elmerülve ($G = F_{\\text{f}}$). (Pl. halak úszóhólyagja, tengeralattjárók ballast-tartályai).<br>
+        3. <i>Elmerülés (Süllyedés):</i> Ha $d_{\\text{test}} > d_{\\text{f}}$, a súly nagyobb, mint a maximális felhajtóerő ($G > F_{\\text{f}}$), a test gyorsulva süllyed az edény aljára.
+      </div>
+      <div class="block def">
+        <div class="step-label">Felületi feszültség és kapillaritás</div>
+        • <b>Felületi feszültség:</b> A folyadékok belső molekulái között minden irányból vonzóerő (kohéziós erő) hat. A felszínen lévő molekulákra viszont csak lefelé és oldalra hat vonzóerő, aminek következtében a folyadék felszíne úgy viselkedik, mint egy kifeszített, rugalmas hártya, amely a lehető legkisebb felületre törekszik (ezért gömb alakúak a vízcseppek). Mennyiségileg a folyadék felszínét határoló $l$ hosszúságú vonalra merőlegesen ható $F$ felületi erő alapján definiáljuk:
+        $$\\text{alpha} = \\frac{F}{l} \\quad \\left[ \\text{Egysége: } \\frac{\\text{N}}{\\text{m}} = \\frac{\\text{J}}{\\text{m}^2} \\right]$$
+        • <b>Nedvesítés és kapilláris jelenségek:</b> Ha a folyadék molekulái és az edény fala közötti vonzóerő (adhézió) nagyobb, mint a folyadékmolekulák közötti erő (kohézió), a folyadék <i>nedvesíti</i> a falat (pl. víz az üvegben, a folyadékfelszín konkáv). Szűk csövekben (hajszálcsövekben) a nedvesítő folyadék a normál szint fölé emelkedik (<b>kapilláris emelkedés</b>), mert a felületi feszültségből származó felfelé mutató erő egyensúlyt tart a felemelt folyadékoszlop súlyával. Nem nedvesítő folyadéknál (pl. higany üvegcsőben) <b>kapilláris süllyedés</b> történik. Ezen alapul a növények vízszállítása a talajból és a szivacsok működése.
+      </div>
+      <div class="block thm">
+        <div class="step-label">Erőhatások áramló közegekben: Bernoulli-törvény és közegellenállás</div>
+        • <b>Kontinuitási egyenlet (Anyagmegmaradás):</b> Összenyomhatatlan ($d_{\\text{f}} = \\text{állandó}$) folyadék stacionárius (időben állandó) áramlása esetén a cső bármely keresztmetszetén egységnyi idő alatt áthaladó folyadék térfogata állandó ($Q_V = A \\cdot v = \\text{állandó}$), vagyis ahol a cső beszűkül ($A$ csökken), ott az áramlási sebesség ($v$) levezethetően megnövekszik: $A_1 \\cdot v_1 = A_2 \\cdot v_2$.<br><br>
+        • <b>Bernoulli-törvénye (Energiamegmaradás):</b> Súrlódásmentes folyadék stacionárius áramlása során a statikus nyomás ($p$), a helyzeti energia sűrűsége ($d_{\\text{f}} \\cdot g \\cdot h$) és a mozgási energia sűrűsége ($\\frac{1}{2} \\cdot d_{\\text{f}} \\cdot v^2$) összege az áramlási vonal mentén állandó:
+        $$p + d_{\\text{f}} \\cdot g \\cdot h + \\frac{1}{2} \\cdot d_{\\text{f}} \\cdot v^2 = \\text{állandó}$$
+        Vízszintes cső esetén ($h = \\text{állandó}$) a törvény kimondja, hogy ahol a sebesség megnő (szűkület), ott a statikus nyomás lecsökken ($p_1 + \\frac{1}{2} d_{\\text{f}} v_1^2 = p_2 + \\frac{1}{2} d_{\\text{f}} v_2^2$). Ezen alapul a porlasztók (karburátor), a vízlgszivattyúk működése, és a repülőgépek szárnyán fellépő <b>dinamikus felhajtóerő</b>: a szárny felső íves felületén a levegő gyorsabban áramlik, mint az alsó egyenes felületén, így felül kisebb lesz a nyomás, és a keletkező nyomáskülönbség felemeli a gépet.<br><br>
+        • <b>Közegellenállás:</b> Folyadékban vagy gázban mozgó testre a közeg által kifejtett, a mozgást gátló erő. Nagy sebességeknél turbulentus áramlás alakul ki, és a közegellenállási erő a <b>sebesség négyzetével</b> arányos:
+        $$F_{\\text{k}} = \\frac{1}{2} \\cdot c_w \\cdot d_{\\text{levegő}} \\cdot A \\cdot v^2$$
+        Ahol $c_w$ a test alakjára jellemző alaktényező (áramvonalas testeknél kicsi), $d_{\\text{levegő}}$ a közeg sűrűsége, $A$ a test mozgásirányra merőleges homlokfelülete, $v$ pedig a test közeghez képesti sebessége.
+      </div>`
+  },
+  {
+    id: 1,
+    title: "Levegőkörnyezetünk, meteorológiai és globális klímafolyamatok",
+    content: `
+      <div class="block def">
+        <div class="step-label">A hőterjedés formái a légkörben</div>
+        A hőterjedés a belső energia átadási folyamata melegebb helyről hidegebb hely felé. Három alapvető formája van, amelyek mindegyike fontos szerepet játszik a földi légkörben:<br><br>
+        1. <b>Hővezetés (Kondukció):</b> Az energia közvetlenül részecskéről részecskére adódik át ütközések révén, makroszkopikus anyagáramlás nélkül. Mivel a levegő gáz, a hővezetési tényezője rendkívül kicsi, vagyis a nyugvó levegő kiváló hőszigetelő (ezen alapul a többrétegű ablaküvegek és a téli ruházat működése).<br>
+        2. <b>Hőáramlás (Konvekció):</b> A felmelegedett anyag sűrűsége lecsökken, ezért a felhajtóerő hatására felemelkedik, míg a hidegebb, sűrűbb anyag lesüllyed. Ez a makroszkopikus anyagáramlás a légköri szelek, a globális cirkuláció és a meteorológiai frontok elsődleges mozgatórugója.<br>
+        3. <b>Hősugárzás (Radiáció):</b> Nem igényel közvetítő közeget, a hőt elektromágneses hullámok (főként infravörös sugárzás) szállítják. A Napból érkező energia 100%-ban sugárzással éri el a Földet a vákuumon keresztül, és a Föld is sugárzással adja le az energiát a világűr felé. A Stefan–Boltzmann-törvény alapján a sugárzott teljesítmény a kisugárzó test abszolút hőmérsékletének negyedik hatványával arányos ($P \\sim T^4$).
+      </div>
+      <div class="block thm">
+        <div class="step-label">Az időjárás fizikai jellemzői és a csapadékképződés</div>
+        • <b>Időjárási jellemzők:</b> A légkör pillanatnyi fizikai állapota, amelyet a hőmérséklet, a légnyomás (mérése a Torricelli-kísérlet alapján higanyos vagy fém aneroid barométerrel), a szélsebesség és a páratartalom határoz meg.<br><br>
+        • <b>A páratartalom fogalmai:</b><br>
+        - <i>Abszolút páratartalom:</i> $1 \\, \\text{m}^3$ levegőben lévő vízgőz tömege ($[\\text{g/m}^3]$).<br>
+        - <i>Relatív páratartalom ($R_{\\text{h}}$):</i> Az abszolút páratartalom és az adott hőmérsékleten lehetséges maximális (telítési) vízgőztartalom aránya százalékban kifejezve. A hőmérséklet csökkenésével a levegő maximális befogadóképessége exponenciálisan csökken.<br><br>
+        • <b>Csapadékképződés és a harmatpont:</b> Ha a nedves levegő lehűl, elér egy olyan kritikus hőmérsékletet, ahol a relatív páratartalom eléri a 100%-ot. Ez a <b>harmatpont</b>. Ha a hőmérséklet ez alá süllyed, a felesleges vízgőz kicsapódik (kondenzálódik). <br>
+        - <i>Talajmenti csapadékok:</i> Ha a kicsapódás a talaj közeli tárgyakon történik $0^\\circ\\text{C}$ felett, <b>harmat</b>, $0^\\circ\\text{C}$ alatt <b>dér</b> vagy <b>zúzmara</b> keletkezik.<br>
+        - <i>Magaslati csapadékok (Felhők és eső):</i> A meleg levegő felszáll, tágul és adiabatikusan (hőcsere nélkül) lehűl. A harmatpontot elérve a levegőben lévő mikroszkopikus porszemcséken (kondenzációs magvakon) apró vízcseppek csapódnak ki, felhőt alkotva. Ha ezek a cseppek egymással ütközve növekednek és a súlyuk legyőzi a felszálló légáramlatok erejét, <b>eső</b>, fagypont alatt pedig <b>hó</b> vagy <b>jégeső</b> formájában hullanak le.
+      </div>
+      <div class="block biz">
+        <div class="step-label">Az üvegházhatás és az ózonpajzs fizikai mechanizmusa</div>
+        • <b>Az üvegházhatás fizikai alapja:</b> A Nap felszíni hőmérséklete magas (kb. $5700 \\, \\text{K}$), ezért a Wien-féle eltolódási törvény értelmében a belőle érkező sugárzás maximuma a rövid hullámhosszú, nagy energiájú <b>látható fény</b> tartományába esik. A légkör a látható fény számára átlátszó, így az eléri a Föld felszínét és felmelegíti azt. A felmelegedett Föld felszíne viszont sokkal alacsonyabb hőmérsékletű (kb. $288 \\, \\text{K}$), így ő maga hosszú hullámhosszú, kis energiájú <b>infravörös (hő-) sugárzást</b> bocsát ki a világűr felé. A légkörben jelen lévő <b>üvegházhatású gázok</b> (vízgőz $\\text{H}_2\\text{O}$, szén-dioxid $\\text{CO}_2$, metán $\\text{CH}_4$) molekulái szerkezetükből adódóan elnyelik (abszorbeálják) ezt az infravörös sugárzást, gerjesztett állapotba kerülnek, majd a kisugárzott energia jelentős részét minden irányban – így visszatérően a Föld felszíne felé is – újrasugározzák. <i>Ez a természetes folyamat biztosítja, hogy a Föld átlaghőmérséklete $+15^\\circ\\text{C}$ a gázok nélküli $-18^\\circ\\text{C}$ helyett, vagyis az élet feltétele.</i><br><br>
+        • <b>Az ózonpajzs szerepe és bomlása:</b> Az ózonréteg a sztratoszférában (kb. $15-30 \\, \\text{km}$ magasságban) található, ahol a háromatomos oxigénmolekulák ($\\text{O}_3$) magas koncentrációban vannak jelen. Fizikai szerepe a Napból érkező, roncsoló hatású, nagy energiájú <b>ultraibolya (főként UV-B és UV-C) sugárzás</b> elnyelése, megvédve az élő szervezetek DNS-szerkezetét. A mesterségesen kibocsátott halogénezett szénhidrogének (CFC gázok / freonok) a magasban az UV sugárzás hatására klórgyökökre bomlanak, amelyek katalizátorként, láncreakcióban bontják le az ózonmolekulákat egyszerű oxigénné ($\\text{O}_2$), létrehozva az ózonlyukat.
+      </div>
+      <div class="block app">
+        <div class="step-label">Épített környezetünk, éghajlat és globális klímaváltozás</div>
+        • <b>Épített környezet és időjárás (Városi hősziget):</b> A nagyvárosok beton- és aszfaltfelületeinek alacsony az albedója (fényvisszaverő képessége), ezért több napsugárzást nyelnek el, mint a természetes zöldfelületek, emellett a burkolt felületek miatt elmarad a hűtő hatású párolgás. Ez, kiegészülve az ipari és közlekedési hőkibocsátással, kialakítja a városi hősziget jelenséget, ahol a városok hőmérséklete fokokkal magasabb a környezeténél.<br><br>
+        • <b>Globális éghajlatváltozás:</b> Az ipari forradalom óta a fosszilis tüzelőanyagok (szén, kőolaj, földgáz) égetése és az erdőirtások miatt a légköri $\\text{CO}_2$ koncentráció drasztikusan megemelkedett. Ez felerősítette az üvegházhatást, megbontva a Föld globális sugárzási energiamérlegét. <br><br>
+        <b>Következményei a fizikai rendszerekre:</b> A globális átlaghőmérséklet emelkedése, a sarki jégsapkák és gleccserek olvadása (ami csökkenti a Föld albedóját, pozitív visszacsatolással tovább gyorsítva a melegedést), a tengerszint emelkedése a hőtágulás és az olvadékvíz miatt, valamint a szélsőséges időjárási események (aszályok, heves viharok, hurrikánok) gyakoriságának és intensivításának növekedése a légkör megnövekedett belső energiája miatt.
+      </div>`
+  }
+];
+
+const tocContainer = document.getElementById('toc');
+const contentContainer = document.getElementById('content-container');
+
+// A tartalom generálása és a tartalomjegyzék felépítése egyszerre
+sections.forEach(s => {
+  // Tartalomjegyzék elem
+  const li = document.createElement('li');
+  li.className = 'toc-item';
+  li.innerHTML = `<a href="#section-${s.id}"><span class="dot"></span>${s.title}</a>`;
+  tocContainer.appendChild(li);
+
+  // Teljes elméleti blokk
+  const sectionElement = document.createElement('section');
+  sectionElement.className = 'section-card';
+  sectionElement.id = 'section-' + s.id;
+  sectionElement.innerHTML = `
+    <h2 class="section-title">${s.title}</h2>
+    <div>${s.content}</div>
+  `;
+  contentContainer.appendChild(sectionElement);
+});
+
+// MathJax renderelés indítása az aszinkron betöltés után
+window.addEventListener('load', () => {
+  if (typeof MathJax !== 'undefined') {
+    MathJax.typesetPromise([contentContainer]);
+  }
+});
+</script>
+</body>
+</html>

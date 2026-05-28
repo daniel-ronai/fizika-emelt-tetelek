@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fizika Emelt</title>
+
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      processEscapes: true
+    }
+  };
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --text: #0f172a;
+    --muted: #475569;
+    --border: #e2e8f0;
+    
+    /* Letisztult, fókuszált fizika színpaletta */
+    --def-border: #6366f1; --def-bg: #f5f3ff; --def-text: #4338ca;
+    --thm-border: #0ea5e9; --thm-bg: #f0f9ff; --thm-text: #0369a1;
+    --biz-border: #f97316; --biz-bg: #fff7ed; --biz-text: #c2410c;
+    --app-border: #10b981; --app-bg: #ecfdf5; --app-text: #047857;
+    
+    --radius: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding: 40px 16px 80px;
+  }
+
+  .wrapper {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  /* Navigáció */
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    margin-bottom: 24px;
+    transition: all 0.2s;
+  }
+  .back-btn:hover { color: var(--text); background: #f1f5f9; }
+
+  /* Tétel Fejléc */
+  header {
+    background: var(--surface);
+    padding: 32px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    margin-bottom: 32px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    background: #f1f5f9;
+    color: var(--muted);
+    padding: 6px 14px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+  }
+
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+  }
+
+  .subtitle {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* Gyorsmenü / Tartalomjegyzék */
+  .toc-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 32px;
+  }
+  .toc-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+    letter-spacing: 0.05em;
+  }
+  .toc-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    list-style: none;
+  }
+  .toc-item a {
+    font-size: 14px;
+    color: var(--muted);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.15s;
+  }
+  .toc-item a:hover { color: var(--text); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); display: inline-block; }
+  .toc-item a:hover .dot { background: var(--thm-border); }
+
+  /* Tanulási szakaszok */
+  .section-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin-bottom: 32px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.01);
+    scroll-margin-top: 20px;
+  }
+
+  .section-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* Speciális Fizika Blokkok */
+  .block {
+    border-left: 4px solid var(--border);
+    padding: 16px 20px;
+    margin: 20px 0;
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  
+  .block.def { border-left-color: var(--def-border); background: var(--def-bg); }
+  .block.thm { border-left-color: var(--thm-border); background: var(--thm-bg); }
+  .block.biz { border-left-color: var(--biz-border); background: var(--biz-bg); }
+  .block.app { border-left-color: var(--app-border); background: var(--app-bg); }
+
+  .step-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+  .block.def .step-label { color: var(--def-text); }
+  .block.thm .step-label { color: var(--thm-text); }
+  .block.biz .step-label { color: var(--biz-text); }
+  .block.app .step-label { color: var(--app-text); }
+
+  /* Szövegformázás */
+  b { font-weight: 600; color: #000; }
+  ul, ol { margin-left: 20px; margin-top: 8px; }
+  li { margin-bottom: 6px; }
+
+  footer {
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 60px;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+  <a href="index.html" class="back-btn">← Főoldal</a>
+  
+  <header>
+    <div class="badge">Fizika • 2. Témakör</div>
+    <h1 id="main-title">Termodinamika és mechanikai energiák</h1>
+    <p class="subtitle" id="main-subtitle">A mechanikai munka és energiamegmaradás, a hőtágulás, az ideális gázok kinetikus elmélete, a halmazállapot-változások energetikája, valamint a termodinamika főtételei és a hőerőgépek hatásfoka</p>
+  </header>
+
+  <div class="toc-box">
+    <div class="toc-title">Navigáció a tétel részei között</div>
+    <ul class="toc-list" id="toc"></ul>
+  </div>
+
+  <main id="content-container"></main>
+
+  <footer></footer>
+</div>
+
+<script>
+// A tétel minden kártyanyitogatás nélkül, logikus folyószövegként, de szigorúan tipografizálva
+const sections = [
+  {
+    id: 0,
+    title: "Mechanikai munka, energiák és a gázok hőtani tulajdonságai",
+    content: `
+      <div class="block def">
+        <div class="step-label">Mechanikai munka, energiák és a munkatétel</div>
+        • <b>Mechanikai munka ($W$):</b> Ha egy állandó $F$ erő hatására a test a hatásvonalával $\\alpha$ szöget bezáró $s$ úton mozdul el, a végzett munka:
+        $$W = F \\cdot s \\cdot \\cos \\alpha \\quad [\\text{Joule (J)} = \\text{N} \\cdot \\text{m}]$$
+        • <b>Mechanikai energiák:</b><br>
+        1. <i>Mozgási (kinetikus) energia:</i> A mozgásban lévő test munkavégző képessége: $E_{\\text{k}} = \\frac{1}{2} \\cdot m \\cdot v^2$.<br>
+        2. <i>Rugalmas energia:</i> $D$ direkciós erejű, $x$ megnyúlású rugó energiája: $E_{\\text{rug}} = \\frac{1}{2} \\cdot D \\cdot x^2$.<br>
+        3. <i>Helyzeti (potenciális) energia:</i> Homogén nehézségi erőtérben $h$ magasságban lévő test energiája: $E_{\\text{h}} = m \\cdot g \\cdot h$.<br>
+        • <b>A munkatétel:</b> A testre ható eredő erő által végzett munka megegyezik a test mozgási energiájának megváltozásával: $W_{\\text{eredő}} = \\Delta E_{\\text{k}} = E_{\\text{k2}} - E_{\\text{k1}}$. Conservative erőtérben (ahol a munka független az úttól, pl. gravitációs tér) érvényes a <i>mechanikai energia megmaradásának törvénye</i>: $E_{\\text{k}} + E_{\\text{p}} = \\text{állandó}$.
+      </div>
+      <div class="block thm">
+        <div class="step-label">Hőmérséklet, hőkapacitás, fajhő és belső energia</div>
+        • <b>Hőmérséklet:</b> Az anyag makroszkopikus állapothatározója, amely az atomok és molekulák rendezetlen hőmozgásának átlagos kinetikus energiájával arányos. Mérése hőtáguláson alapuló folyadékos vagy fém barométerekkel, illetve elektromos ellenállás-változással történik. Skálák: Celsius ($^{\\circ}\\text{C}$) és az abszolút Kelvin ($\text{K}$), ahol $T(\\text{K}) = t(^{\\circ}\\text{C}) + 273{,}15$.<br>
+        • <b>Belső energia ($E_{\\text{b}}$ vagy $U$):</b> A rendszert felépítő részecskék összes mikroszkopikus energiájának (kaotikus mozgási energiájuk és a köztük lévő kölcsönhatási potenciális energiák) összege.<br>
+        • <b>Hőmennyiség ($Q$):</b> Termikus kölcsönhatás során, munkavégzés nélkül, a hőmérséklet-különbség hatására átadott belső energia.<br>
+        • <b>Fajhő ($c$) és Hőkapacitás ($C$):</b><br>
+        - <i>Fajhő:</i> Megadja, mekkora hőmennyiség szükséges $1 \\, \\text{kg}$ tömegű anyag hőmérsékletének $1 \\, \\text{K}$-nel való megemeléséhez:
+        $$c = \\frac{Q}{m \\cdot \\Delta T} \\quad \\left[ \\frac{\\text{J}}{\\text{kg} \\cdot \\text{K}} \\right]$$
+        - <i>Hőkapacitás:</i> Egy adott test egészének $1 \\, \\text{K}$-nel való melegítéséhez szükséges hő: $C = m \\cdot c = \\frac{Q}{\\Delta T} \\, [\\text{J/K}]$.
+      </div>
+      <div class="block biz">
+        <div class="step-label">Szilárd testek és folyadékok hőtágulása</div>
+        A hőmérséklet növekedésével a részecskék rezgési amplitúdója nő, és az aszimmetrikus potenciálvölgy miatt távolodnak egymástól.<br>
+        • <b>Szilárd testek lineáris tágulása:</b> Az $l_0$ kezdeti hosszúságú test $\\Delta T$ melegítés hatására bekövetkező hosszváltozása:
+        $$\\Delta l = \\alpha \\cdot l_0 \\cdot \\Delta T \\quad \\rightarrow \\quad l(T) = l_0 \\cdot (1 + \\alpha \\cdot \\Delta T)$$
+        Ahol $\\alpha$ a lineáris hőtágulási együttható ($[1/\\text{K}]$).<br>
+        • <b>Szilárd testek térfogati tágulása:</b> Izotróp anyagokra jó közelítéssel a térfogati együttható a lineáris háromszorosa ($\\beta \\approx 3\\alpha$):
+        $$\\Delta V = \\beta \\cdot V_0 \\cdot \\Delta T \\quad \\rightarrow \\quad V(T) = V_0 \\cdot (1 + \\beta \\cdot \\Delta T)$$
+        • <b>Folyadékok hőtágulása:</b> Csak térfogati tágulásról beszélhetünk: $\\Delta V = \\beta_{\\text{f}} \\cdot V_0 \\cdot \\Delta T$. <br>
+        <i>A víz tágulásának anomáliája:</i> A víz sűrűsége $+4^{\\circ}\\text{C}$-on a legnagyobb. $0^{\\circ}\\text{C}$ és $+4^{\\circ}\\text{C}$ között a hőmérséklet növelésével a térfogata csökken (a jégszerkezet maradványainak összeomlása miatt). Ezért fagynak be a tavak felülről lefelé, biztosítva a vízi életet.
+      </div>
+      <div class="block app">
+        <div class="step-label">Az ideális gáz kinetikus modellje és állapotegyenlete</div>
+        • <b>Ideális gáz modellje:</b> Olyan elméleti gáz, amelyben a gázrészecskék kiterjedés nélküli pontszerű tömegek, egymással és az edény falával teljesen rugalmasan ütköznek, és az ütközések közötti időben semmilyen távolba ható kölcsönhatási erőt (vonzást vagy taszítást) nem fejtenek ki egymásra. Emiatt az ideális gáz belső energiája kizárólag a részecskék mozgási energiájából áll ($E_{\\text{b}} = E_{\\text{kin,össz}}$).<br>
+        • <b>Állapotjelzők:</b> Nyomás ($p$, [Pa]), Térfogat ($V$, [$\\text{m}^3$]), Hőmérséklet ($T$, [K]), Anyagmennyiség ($n$, [mol], ahol $n = m/M = N/N_{\\text{A}}$).<br>
+        • <b>Egyesített gáztörvény és Állapotegyenlet (Ideális gáz törvénye):</b> Rögzített gázmennyiségre az állapotjelzők kombinációja állandó: $\\frac{p \\cdot V}{T} = \\text{állandó}$. tetszőleges gázmennyiségre felírva az egyetemes gáztörvényt:
+        $$p \\cdot V = n \\cdot R \\cdot T$$
+        Ahol $R$ az egyetemes gázállandó ($R \\approx 8{,}314 \\, \\frac{\\text{J}}{\\text{mol} \\cdot \\text{K}}$). A törvény felírható a Boltzmann-állandóval ($k_{\\text{B}} = R/N_{\\text{A}} \\approx 1{,}38 \\cdot 10^{-23} \\, \\text{J/K}$) is, a részecskeszám ($N$) függvényében: $p \\cdot V = N \\cdot k_{\\text{B}} \\cdot T$.<br>
+        • <b>Kinetikus gázelmélet alap-összefüggése:</b> A részecskék falba ütközésekor átadott impulzusából levezethető a nyomás mikroszkopikus képlete: $p = \\frac{1}{3} \\cdot \\rho \\cdot v_{\\text{négyzetes}}^2 = \\frac{2}{3} \\cdot \\frac{N}{V} \\cdot \\epsilon_{\\text{kin}}$. Ebből következik, hogy egyetlen gázmolekula átlagos transzlációs mozgási energiája közvetlenül arányos az abszolút hőmérséklettel:
+        $$\\epsilon_{\\text{kin}} = \\frac{1}{2} \\cdot m_0 \\cdot v_{\\text{négyzetes}}^2 = \\frac{3}{2} \\cdot k_{\\text{B}} \\cdot T$$
+      </div>`
+  },
+  {
+    id: 1,
+    title: "A termodinamika főtételei, folyamatok és halmazállapot-változások",
+    content: `
+      <div class="block def">
+        <div class="step-label">A termodinamika I. főtétele és a térfogati munka</div>
+        • <b>Térfogati munka ($W_{\\text{gáz}}$):</b> Ha a gáz tágulása során $p$ állandó nyomás mellett elmozdít egy $A$ felületű dugattyút $\\Delta s$ távolságra, a gáz által a külvilágon végzett munka $W' = F \\cdot \\Delta s = p \\cdot A \\cdot \\Delta s = p \\cdot \\Delta V$. A külvilág által a gázon végzett munka ennek ellentettje:
+        $$W_{\\text{gáz}} = -p \\cdot \\Delta V$$
+        Ha a térfogat nő ($\\Delta V > 0$), a gáz munkát végez a környezeten ($W_{\\text{gáz}} < 0$). Ha a térfogat csökken, a környezet végez munkát a gázon.<br>
+        • <b>A termodinamika I. főtétele (Energiamegmaradás):</b> Egy rendszer belső energiájának megváltozása ($\\Delta E_{\\text{b}}$) egyenlő a rendszerrel közölt (vagy onnan elvont) $Q$ hőmennyiség és a rendszeren végzett $W_{\\text{gáz}}$ térfogati munka összegével:
+        $$\\Delta E_{\\text{b}} = Q + W_{\\text{gáz}} \\quad \\rightarrow \\quad \\Delta E_{\\text{b}} = Q - p \\cdot \\Delta V \\quad \\text{(izobár esetben)}$$
+      </div>
+      <div class="block thm">
+        <div class="step-label">Nevezetes gázfolyamatok leírása és P-V diagramjai</div>
+        
+        • <b>1. Izoterm állapotváltozás ($T = \\text{állandó}$):</b> Boyle–Mariotte-törvény: $p \\cdot V = \\text{állandó}$ ($p \\sim 1/V$). A $p-V$ diagramon a képe <i>hiperbola</i> (izoterma). Mivel $\\Delta T = 0$, az ideális gáz belső energiája nem változik ($\\Delta E_{\\text{b}} = 0$). Az I. főtétel alapján: $Q = -W_{\\text{gáz}}$, vagyis a gázzal közölt összes hő térfogati munkává alakul.<br>
+        • <b>2. Izobár állapotváltozás ($p = \\text{állandó}$):</b> Gay-Lussac I. törvénye: $\\frac{V}{T} = \\text{állandó}$ ($V \\sim T$). A $p-V$ diagramon a képe a $V$-tengellyel párhuzamos <i>vízszintes egyenes</i>. Mivel a térfogat változik, van munkavégzés: $W_{\\text{gáz}} = -p \\cdot \\Delta V$. A belső energia is változik. A közölt hő: $Q = n \\cdot C_p \\cdot \\Delta T$.<br>
+        • <b>3. Izochor állapotváltozás ($V = \\text{állandó}$):</b> Gay-Lussac II. törvénye: $\\frac{p}{T} = \\text{állandó}$ ($p \\sim T$). A $p-V$ diagramon a képe a $p$-tengellyel párhuzamos <i>függőleges egyenes</i>. Mivel $\\Delta V = 0$, a gáz térfogati munkája **szigorúan zéró** ($W_{\\text{gáz}} = 0$). Az I. főtétel alapján: $\\Delta E_{\\text{b}} = Q = n \\cdot C_V \\cdot \\Delta T$, azaz a közölt hő teljes egészében a belső energiát növeli.<br>
+        • <b>4. Adiabatikus állapotváltozás ($Q = 0$):</b> A rendszer és a környezet között nincs hőcsere (tökéletes hőszigetelés vagy rendkívül gyors lefolyás miatt). Poisson-törvény: $p \\cdot V^{\\gamma} = \\text{állandó}$, ahol $\\gamma = C_p / C_V > 1$ az adiabatikus kitevő. A $p-V$ diagramon az adiabata <i>az izotermánál meredekebb görbe</i>. Az I. főtétel alapján: $\\Delta E_{\\text{b}} = W_{\\text{gáz}}$. Ha a gáz adiabatikusan tágul ($W_{\\text{gáz}} < 0$), a belső energiája csökken, vagyis a gáz erősen **lehűl** (ezen alapul a gázok cseppfolyósítása és a jégképződés a kerékpárszelepekben).
+      </div>
+      <div class="block biz">
+        <div class="step-label">A termodinamika II. főtétele, a hőerőgépek és a perpetuum mobile</div>
+        • <b>A termodinamika II. főtétele (A folyamatok iránya):</b><br>
+        - <i>Clausius-féle megfogalmazás:</i> Nem lehetséges olyan spontán hőtani folyamat, amelynek egyetlen eredménye a hő átvitele egy alacsonyabb hőmérsékletű testről egy magasabb hőmérsékletű testre (a hő magától mindig a melegebbtől a hidegebb felé folyik).<br>
+        - <i>Kelvin-féle megfogalmazás:</i> Nem lehetséges olyan periodikusan működő gép, amely egyetlen hőtartályból hőt von el és azt teljes egészében munkává alakítja, anélkül, hogy a környezetben változást idézne elő (szükség van egy hideg hűtőközegre is, ahova a veszteséghőt leadja).<br>
+        • <b>Hőerőgépek hatásfoka ($\\eta$):</b> Olyan periodikus gépek, amelyek a meleg tartályból felvett $Q_{\\text{meleg}}$ hő egy részét hasznos mechanikai munkává ($W$) alakítják, miközben a maradék $Q_{\\text{hideg}}$ hőt leadják a hűtőnek: $W = Q_{\\text{meleg}} - |Q_{\\text{hideg}}|$. A hatásfok definíciója:
+        $$\\eta = \\frac{W}{Q_{\\text{meleg}}} = \\frac{Q_{\\text{meleg}} - |Q_{\\text{hideg}}|}{Q_{\\text{meleg}}} = 1 - \\frac{|Q_{\\text{hideg}}|}{Q_{\\text{meleg}}}$$
+        Sadi Carnot bebizonyította, hogy a két rögzített hőmérsékleti határ ($T_{\\text{meleg}}$ és $T_{\\text{hideg}}$) között működő elméleti, reverzibilis körfolyamat (Carnot-ciklus) hatásfoka a létező maximális hatásfok, amely $100\\%$-ot sosem érhet el:
+        $$\\eta_{\\text{max}} = 1 - \\frac{T_{\\text{hideg}}}{T_{\\text{meleg}}}$$
+        • <b>Perpetuum mobile (Örökmozgó) típusai:</b><br>
+        1. <i>Elsőfajú perpetuum mobile:</i> Olyan gép, amely a semmiből képes munkát végezni, vagyis több energiát termel, mint amennyit felvesz. Létezése a **Termodinamika I. főtételét** (az energiamegmaradást) sérti, így lehetetlen.<br>
+        2. <i>Másodfajú perpetuum mobile:</i> Olyan gép, amely nem sérti az energiamegmaradást, mert a környezet (pl. az óceánok) belső hőenergiáját alakítaná 100%-os hatásfokkal mechanikai munkává, hűtőtartály nélkül. Létezése a **Termodinamika II. főtételét** sérti, így ez is megvalósíthatatlan.
+      </div>
+      <div class="block app">
+        <div class="step-label">Halmazállapot-változások és energetikai jellemzésük</div>
+        • <b>A három fő halmazállapot általános jellemzése:</b><br>
+        - <i>Szilárd:</i> Határozott alak és térfogat. A részecskék rögzített rácspontok körül végeznek kis amplitúdójú rezgőmozgást. Erős kohéziós erők.<br>
+        - <i>Cseppfolyós (Folyadék):</i> Határozott térfogat, de változó, az edény alakját felvevő forma. A részecskék egymáson gördülnek, szoros közelségben vannak, de nincs távolsági rend.<br>
+        - <i>Légnemű (Gáz/Gőz):</i> Nincs se határozott alakja, se térfogata; kitölti a rendelkezésre álló teret. A részecskék közötti távolság nagy, egymástól függetlenül, szabadon repülnek az ütközések között.<br>
+        • <b>Gáz, gőz és telített gőz fogalma:</b> A gőz olyan légnemű anyag, amelynek hőmérséklete a kritikus hőmérséklet alatt van, így tiszta összenyomással (hűtés nélkül) is cseppfolyósítható. A **telített gőz** dinamikus egyensúlyban van a saját folyadékával egy zárt térben: időegység alatt pontosan ugyanannyi molekula lép ki a folyadékból (párolgás), mint amennyi visszatér oda (kondenzáció). A telített gőz nyomása kizárólag a hőmérséklettől függ, a térfogattól független!<br>
+        • <b>A folyamatok halmazállapot-változási állandói (Energetikai leírás):</b><br>
+        Minden fázisátalakulás során a közölt vagy elvont hő nem a hőmérsékletet változtatja, hanem a részecskék közötti kötések felbontására vagy kialakítására fordítódik (a fázisátalakulás alatt a hőmérséklet **szigorúan állandó**).<br>
+        1. <i>Olvadás és Fagyás:</i> $Q_{\\text{olv}} = L_{\\text{olv}} \\cdot m$, ahol $L_{\\text{olv}}$ az olvadáshő ($[\\text{J/kg}]$). Az olvadáspont függ a külső nyomástól: a táguló anyagoknál a nyomás növelése emeli, a fázisváltáskor összehúzódó anyagoknál (pl. jég) a nyomás növelése *csökkenti* az olvadáspontot (ezért csúszik a korcsolya).<br>
+        2. <i>Párolgás és Forrás:</i> A párolgás minden hőmérsékleten, de csak a folyadék felszínén történik. A **forrás** egy kritikus forrásponton következik be, amikor a folyadék belsejében lévő gőzbuborékok telített gőznyomása eléri a külső légnyomást, így a buborékok fel tudnak fúvódni és a fázisváltás a folyadék teljes térfogatában megindul. Szükséges hőmennyiség: $Q_{\\text{forr}} = L_{\\text{forr}} \\cdot m$, ahol $L_{\\text{forr}}$ a forráshő. A külső nyomás növelése (pl. Kukta edény) emeli a forráspontot, így az étel gyorsabban megfő; míg kis nyomáson (pl. magas hegyeken) a víz $100^{\\circ}\\text{C}$ alatt forr fel.<br>
+        3. <i>Szublimáció:</i> A szilárd fázisból az anyag közvetlenül légnemű fázisba lép át a folyadékállapot kihagyásával (pl. szárazjég $\\text{CO}_2$, jód, kámfor). Szükséges energia a szublimációs hő: $Q_{\\text{szub}} = L_{\\text{szub}} \\cdot m$.
+      </div>`
+  }
+];
+
+const tocContainer = document.getElementById('toc');
+const contentContainer = document.getElementById('content-container');
+
+// A tartalom generálása és a tartalomjegyzék felépítése egyszerre
+sections.forEach(s => {
+  // Tartalomjegyzék elem
+  const li = document.createElement('li');
+  li.className = 'toc-item';
+  li.innerHTML = `<a href="#section-${s.id}"><span class="dot"></span>${s.title}</a>`;
+  tocContainer.appendChild(li);
+
+  // Teljes elméleti blokk
+  const sectionElement = document.createElement('section');
+  sectionElement.className = 'section-card';
+  sectionElement.id = 'section-' + s.id;
+  sectionElement.innerHTML = `
+    <h2 class="section-title">${s.title}</h2>
+    <div>${s.content}</div>
+  `;
+  contentContainer.appendChild(sectionElement);
+});
+
+// MathJax renderelés indítása az aszinkron betöltés után
+window.addEventListener('load', () => {
+  if (typeof MathJax !== 'undefined') {
+    MathJax.typesetPromise([contentContainer]);
+  }
+});
+</script>
+</body>
+</html>

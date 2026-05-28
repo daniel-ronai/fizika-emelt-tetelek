@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fizika Emelt</title>
+
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      processEscapes: true
+    }
+  };
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --text: #0f172a;
+    --muted: #475569;
+    --border: #e2e8f0;
+    
+    /* Letisztult, fókuszált fizika színpaletta */
+    --def-border: #6366f1; --def-bg: #f5f3ff; --def-text: #4338ca;
+    --thm-border: #0ea5e9; --thm-bg: #f0f9ff; --thm-text: #0369a1;
+    --biz-border: #f97316; --biz-bg: #fff7ed; --biz-text: #c2410c;
+    --app-border: #10b981; --app-bg: #ecfdf5; --app-text: #047857;
+    
+    --radius: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding: 40px 16px 80px;
+  }
+
+  .wrapper {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  /* Navigáció */
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    margin-bottom: 24px;
+    transition: all 0.2s;
+  }
+  .back-btn:hover { color: var(--text); background: #f1f5f9; }
+
+  /* Tétel Fejléc */
+  header {
+    background: var(--surface);
+    padding: 32px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    margin-bottom: 32px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    background: #f1f5f9;
+    color: var(--muted);
+    padding: 6px 14px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+  }
+
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+  }
+
+  .subtitle {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* Gyorsmenü / Tartalomjegyzék */
+  .toc-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 32px;
+  }
+  .toc-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+    letter-spacing: 0.05em;
+  }
+  .toc-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    list-style: none;
+  }
+  .toc-item a {
+    font-size: 14px;
+    color: var(--muted);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.15s;
+  }
+  .toc-item a:hover { color: var(--text); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); display: inline-block; }
+  .toc-item a:hover .dot { background: var(--thm-border); }
+
+  /* Tanulási szakaszok */
+  .section-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin-bottom: 32px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.01);
+    scroll-margin-top: 20px;
+  }
+
+  .section-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* Speciális Fizika Blokkok */
+  .block {
+    border-left: 4px solid var(--border);
+    padding: 16px 20px;
+    margin: 20px 0;
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  
+  .block.def { border-left-color: var(--def-border); background: var(--def-bg); }
+  .block.thm { border-left-color: var(--thm-border); background: var(--thm-bg); }
+  .block.biz { border-left-color: var(--biz-border); background: var(--biz-bg); }
+  .block.app { border-left-color: var(--app-border); background: var(--app-bg); }
+
+  .step-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+  .block.def .step-label { color: var(--def-text); }
+  .block.thm .step-label { color: var(--thm-text); }
+  .block.biz .step-label { color: var(--biz-text); }
+  .block.app .step-label { color: var(--app-text); }
+
+  /* Szövegformázás */
+  b { font-weight: 600; color: #000; }
+  ul, ol { margin-left: 20px; margin-top: 8px; }
+  li { margin-bottom: 6px; }
+
+  footer {
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 60px;
+  }
+</style>
+</head>
+<body>
+  
+<div class="wrapper">
+  <a href="index.html" class="back-btn">← Főoldal</a>
+  
+  <header>
+    <div class="badge">Fizika • 6. Témakör</div>
+    <h1 id="main-title">Atomfizika, magfizika</h1>
+    <p class="subtitle" id="main-subtitle">Az atom- és magszerkezet kísérleti alapjai, a hullám-részecske kettősség, a radioaktivitás törvényei és a magenergia gyakorlati alkalmazásai</p>
+  </header>
+
+  <div class="toc-box">
+    <div class="toc-title">Navigáció a tétel részei között</div>
+    <ul class="toc-list" id="toc"></ul>
+  </div>
+
+  <main id="content-container"></main>
+
+  <footer></footer>
+</div>
+
+<script>
+// A tétel minden kártyanyitogatás nélkül, logikus folyószövegként, de szigorúan tipografizálva
+const sections = [
+  {
+    id: 0,
+    title: "Az anyag atomos szerkezete és az elektron",
+    content: `
+      <div class="block thm">
+        <div class="step-label">Az atomos szerkezet közvetett bizonyítékai</div>
+        Az anyag diszkrét részecskékből álló felépítésére a gáztörvények makroszkopikus összefüggései és a kémia állandó tömegviszonyai mutattak rá. A közvetlen bizonyítékot a <b>Brown-mozgás</b> szolgáltatta (virágporszemek kaotikus cikcakk mozgása folyadékban), melyet Albert Einstein magyarázott meg a folyadékmolekulák statisztikus ütközéseivel.
+      </div>
+      <div class="block def">
+        <div class="step-label">Avogadro-törvény és az Avogadro-szám</div>
+        Különböző gázok azonos térfogataiban azonos hőmérsékleten és nyomáson a részecskék száma megegyezik. Az $N_{\\text{A}}$ állandó megadja az $1 \\, \\text{mol}$ anyagmennyiségben lévő részecskék számát:
+        $$N_{\\text{A}} \\approx 6{,}022 \\cdot 10^{23} \\, \\frac{1}{\\text{mol}}$$
+      </div>
+      <div class="block thm">
+        <div class="step-label">Az elektron mint részecske felfedezése</div>
+        J. J. Thomson katódsugárcsöves kísérleteiben elektromos és mágneses mezővel térítette el a katódsugarakat, bizonyítva, hogy azok negatív töltésű részecskékből állnak. Meghatározta a részecskék fajlagos töltését ($e/m_{\\text{e}}$), felfedezve ezzel az elektront.
+      </div>
+      <div class="block def">
+        <div class="step-label">Millikan-kísérlet és az elemi töltés</div>
+        Robert Millikan porlasztott olajcseppek mozgását vizsgálta elektromos térerőben és gravitációs mezőben. Kimutatta, hogy a cseppek töltése mindig egy legkisebb egység egész számú többszöröse. Ez az $e$ <b>elemi töltés</b>:
+        $$e \\approx 1{,}602 \\cdot 10^{-19} \\, \\text{C}$$
+        Minden makroszkopikus elektromos töltés kvantált: $Q = n \\cdot e$.
+      </div>`
+  },
+  {
+    id: 1,
+    title: "Rutherford szóráskísérlete és az atommodellek",
+    content: `
+      <div class="block app">
+        <div class="step-label">Rutherford-féle szóráskísérlet (1911)</div>
+        Rutherford vékony aranyfóliát bombázott radioaktív forrásból származó, pozitív töltésű, nehéz $\\alpha$-részecskékkel (héliummagokkal).<br><br>
+        <b>Tapasztalat:</b> A részecskék elsöprő többsége irányváltoztatás nélkül haladt át a fólián. Igen kis hányaduk viszont nagy szögben eltérült, sőt, néhány részecske (kb. 1 a 20 000-ből) visszafelé pattant meg.
+      </div>
+      <div class="block thm">
+        <div class="step-label">A planetáris modell és a klasszikus fizika csődje</div>
+        • <b>Thomson-modell (puding-modell):</b> Az atom egy pozitív töltésű massza, amibe az elektronok be vannak ágyazva. Rutherford kísérlete megcáfolta, mert a puding homogén mezője képtelen lett volna visszaverni egy nagy sebességű $\\alpha$-részecskét.<br>
+        • <b>Rutherford-féle planetáris modell:</b> Az atom szinte teljes tömege és összes pozitív töltése egy parányi középpontban, az <b>atommagban</b> ($10^{-15} \\, \\text{m}$) tömörül. Körülötte a hatalmas, üres atomhéjban ($10^{-10} \\, \\text{m}$) keringenek az elektronok.<br>
+        • <b>A modell bukása:</b> A körpályán keringő elektron gyorsuló mozgást végez. A klasszikus elektrodinamika szerint a gyorsuló töltésnek folyamatosan energiát kell kisugároznia. Emiatt az elektron energiája elfogyna, és törtmásodperc alatt belezuhanna a magba. Az atomok így instabilak lennének, és folytonos színképet adnának – a valóságban viszont az atomok stabilak és vonalas színképűek.
+      </div>
+      <div class="block thm">
+        <div class="step-label">Bohr-féle atommodell (1913)</div>
+        Niels Bohr félklasszikus posztulátumokkal oldotta meg a problémát a hidrogénatomra:<br><br>
+        1. <b>Stacionárius pályák:</b> Az elektron csak olyan meghatározott körpályákon keringhet, amelyeken nem sugároz. Itt az impulzusmomentuma ($L$) a Planck-konstans $2\\pi$-ed részének egész számú többszöröse:
+        $$L = m_{\\text{e}} \\cdot v \\cdot r = n \\cdot \\frac{h}{2\\pi} \\quad (n = 1, 2, 3, \\dots)$$
+        2. <b>Frekvenciafeltétel:</b> Sugárzás (foton kibocsátása vagy elnyelése) csak akkor történik, ha az elektron egyik megengedett pályáról a másikra ugrik. A foton energiája a pályák energiakülönbsége:
+        $$\\Delta E = E_2 - E_1 = h \\cdot f$$
+        Ahol $h \\approx 6{,}626 \\cdot 10^{-34} \\, \\text{J} \\cdot \\text{s}$ a Planck-konstans.
+      </div>`
+  },
+  {
+    id: 2,
+    title: "A fény és az anyag kettős természete",
+    content: `
+      <div class="block thm">
+        <div class="step-label">A fényelektromos jelenség (Fotoeffektus)</div>
+        Ha fémfelületet fény (jellemzően UV sugárzás) ér, abból elektronok lépnek ki.<br><br>
+        <b>Klasszikus hullámelméleti paradoxon:</b> A hullámelmélet szerint a fény intenzitásának (amplitúdójának) növelésével növekednie kellene a kilépő elektronok energiájának, és a túl gyenge fénynek időre lenne szüksége az elektron kiszabadításához. A kísérletek ezzel szemben azt mutatták, hogy a kilépő elektronok energiája csak a fény frekvenciájától függ, és egy határfrekvencia ($f_0$) alatt egyáltalán nincs elektronkilépés, függetlenül az intenzitástól.
+      </div>
+      <div class="block biz">
+        <div class="step-label">Einstein fényelektromos egyenlete (1905)</div>
+        Einstein a fény korpuszkuláris (részecske) elméletével magyarázta meg a jelenséget: a fény $E = h \\cdot f$ energiájú energiacsomagokból, <b>fotonokból</b> áll. Egy foton egyetlen elektronnak adja át a teljes energiáját.<br>
+        Az energiamegmaradás egyenlete:
+        $$h \\cdot f = W_{\\text{ki}} + E_{\\text{ki,max}}$$
+        $$h \\cdot f = W_{\\text{ki}} + \\frac{1}{2}m_{\\text{e}}v_{\\text{max}}^2$$
+        Ahol $W_{\\text{ki}}$ a fémre jellemző kilépési munka. Ha $h \\cdot f < W_{\\text{ki}}$, a folyamat végbe sem mehet. Az intenzitás növelése csupán a fotonok (és így a kilépő elektronok) számát növeli.
+      </div>
+      <div class="block app">
+        <div class="step-label">Gyakorlati alkalmazás: A fotocella</div>
+        A fotocella egy vákuumcső katóddal és anóddal. Ha a katódot fény éri, a fotoeffektus miatt elektronok válnak ki, és zárt áramkör esetén fotoáram mérhető. Alkalmazása: fénymérés, alkonyatkapcsolók, mozgásérzékelők, napelemek.
+      </div>
+      <div class="block thm">
+        <div class="step-label">De Broglie-féle anyaghullámok (1924)</div>
+        Louis de Broglie felvetette, hogy a fényhez hasonlóan a klasszikus anyagi részecskék is rendelkeznek hullámtulajdonságokkal. Egy $p = m \\cdot v$ impulzusú részecske <b>anyaghullámának</b> hullámhossza:
+        $$\\lambda = \\frac{h}{p} = \\frac{h}{m \\cdot v}$$
+        <b>Kísérleti igazolás:</b> Davisson és Germer elektronnyaláb kristályrácson történő elhajlásával (diffrakció) bizonyították az elektron hullámtermészetét. Ezen alapul az elektronmikroszkóp, mely a fény hullámhosszánál sokkal kisebb de Broglie-hullámhossz miatt hatalmas felbontásra képes.
+      </div>`
+  },
+  {
+    id: 3,
+    title: "Az atommag felépítése, tömegdefektus és kötési energia",
+    content: `
+      <div class="block def">
+        <div class="step-label">Az atommag összetétele és az izotópok</div>
+        Az atommagot pozitív töltésű protonok és semleges neutronok (közös néven <b>nukleonok</b>) alkotják.<br>
+        Jelölés: $\\text{}^{A}_{\\phantom{}Z}\\text{X}$, ahol $Z$ a rendszám (protonok száma), $A$ a tömegszám (nukleonok száma). A neutronok száma: $N = A - Z$.<br>
+        • <b>Izotópok:</b> Azonos rendszámú, de eltérő tömegszámú atommagok (pl. a szén stabil $\\text{}^{12}_{\\phantom{}6}\\text{C}$ és radioaktív $\\text{}^{14}_{\\phantom{}6}\\text{C}$ izotópja). Kémiai tulajdonságaik azonosak, magfizikai viselkedésük gyökeresen eltérő.
+      </div>
+      <div class="block thm">
+        <div class="step-label">A magerő tulajdonságai</div>
+        A protonok közötti elektrosztatikus taszítást a <b>magerők</b> (erős kölcsönhatás) győzik le. Tulajdonságai: a természetben ismert legerősebb vonzóerő, rendkívül rövid hatótávolságú (csak kb. $10^{-15} \\, \\text{m}$-en belül hat), és töltésfüggetlen (ugyanolyan erővel hat $p-p$, $p-n$ és $n-n$ között).
+      </div>
+      <div class="block biz">
+        <div class="step-label">Tömegdefektus és kötési energia levezetése</div>
+        Egy összetett, stabil atommag nyugalmi $M_{\\text{mag}}$ tömege mindig kisebb, mint az őt felépítő szabad nukleonok nyugalmi tömegeinek összege. Ez a tömeghiány a <b>tömegdefektus</b>:
+        $$\\Delta m = \\left( Z \\cdot m_{\\text{p}} + (A-Z) \\cdot m_{\\text{n}} \\right) - M_{\\text{mag}}$$
+        Az atommag keletkezése során ez a tömeghiány energiaként sugárzódik ki Einstein tömeg-energia ekvivalenciája szerint ($\\Delta E = \\Delta m \\cdot c^2$). Ugyanilyen nagyságú energia befektetése szükséges a mag szabad nukleonokra történő szétszedéséhez. Ez a <b>kötési energia</b> ($E_{\\text{k}}$):
+        $$E_{\\text{k}} = \\Delta m \\cdot c^2 = \\left[ Z \\cdot m_{\\text{p}} + (A-Z) \\cdot m_{\\text{n}} - M_{\\text{mag}} \\right] \\cdot c^2$$
+        • <b>Egy nukleonra jutó kötési energia ($E_{\\text{k}}/A$):</b> Megmutatja a mag stabilitását. Maximális értéke a közepes tömegszámú magoknál ($\\text{Fe}$, $\\text{Ni}$, $A \\approx 60$) van. Ebből következik, hogy a nagyon nehéz magok hasadásakor és a nagyon könnyű magok egyesülésekor (fúzió) is hatalmas energia szabadul fel.
+      </div>`
+  },
+  {
+    id: 4,
+    title: "Radioaktivitás, bomlástörvény és sugárzásmérés",
+    content: `
+      <div class="block thm">
+        <div class="step-label">Spontán magátalakulások (Radioaktív bomlások)</div>
+        • <b>$\\alpha$-bomlás:</b> Az instabil magból egy héliummag ($\\text{}^{4}_{\\phantom{}2}\\text{He}$) lép ki. A tömegszám 4-gyel, a rendszám 2-vel csökken:
+        $$\\text{}^{A}_{\\phantom{}Z}\\text{X} \\rightarrow \\text{}^{A-4}_{\\phantom{}Z-2}\\text{Y} + \\text{}^{4}_{\\phantom{}2}\\text{He}$$
+        • <b>$\\beta^-$-bomlás:</b> A magban egy neutron protonná alakul át, miközben egy elektron ($\\text{e}^-$) és egy antineutrínó ($\\bar{\\nu}_{\\text{e}}$) hagyja el a magot. A rendszám eggyel nő, a tömegszám változatlan:
+        $$\\text{}^{A}_{\\phantom{}Z}\\text{X} \\rightarrow \\text{}^{A}_{\\phantom{}Z+1}\\text{Y} + \\text{e}^- + \\bar{\\nu}_{\\text{e}}$$
+        • <b>$\\gamma$-sugárzás:</b> A bomlások után gerjesztett állapotban maradt mag nagy frekvenciájú, elektromágneses fotont bocsát ki részecskeváltozás nélkül.
+      </div>
+      <div class="block biz">
+        <div class="step-label">A rádióaktív bomlástörvény</div>
+        A bomlás tiszta statisztikai folyamat. A $dt$ idő alatt elbomló magok száma arányos a meglévő magok számával: $-dN = \\lambda \\cdot N \\cdot dt$, ahol $\\lambda$ a bomlási állandó. Az egyenlet megoldása a <b>bomlástörvény</b>:
+        $$N(t) = N_0 \\cdot \\text{e}^{-\\lambda \\cdot t} = N_0 \\cdot 2^{-\\frac{t}{T_{1/2}}}$$
+        Ahol $N_0$ a kezdeti bomlatlan magok száma, $T_{1/2}$ pedig a <b>felezési idő</b>, ami alatt a minta fele elbomlik. Összefüggésük: $T_{1/2} = \\frac{\\ln 2}{\\lambda}$.
+      </div>
+      <div class="block def">
+        <div class="step-label">Aktivitás és dózisfogalmak</div>
+        • <b>Aktivitás ($A$):</b> A másodpercenkénti bomlások száma. Egysége a <b>Becquerel</b> ($1 \\, \\text{Bq} = 1 \\, \\text{bomlás}/\\text{s}$). Egyenlete: $A(t) = \\lambda \\cdot N(t)$.<br>
+        • <b>Sugárzásmérés:</b> Kimutatása gázionizációs (Geiger–Müller-számlálócső) vagy fényfelvillanásos (szcintillációs számláló) elven történik.<br>
+        • <b>Dozimetria:</b> Az elnyelt dózis egysége a Gray ($1 \\, \\text{Gy} = 1 \\, \\text{J}/\\text{kg}$). A biológiai károsító hatást kifejező ekvivalens dózis egysége a Sievert ($\\text{Sv}$).
+      </div>`
+  },
+  {
+    id: 5,
+    title: "Maghasadás, láncreakció és nukleáris technológiák",
+    content: `
+      <div class="block thm">
+        <div class="step-label">Indított maghasadás (Fisszió)</div>
+        Hahn és Strassmann fedezték fel, hogy ha bizonyos nehéz magokat (pl. az urán $\\text{}^{235}_{\\phantom{}92}\\text{U}$ izotópját) lassú (termikus) neutronnal bombáznak, a mag befogja a neutront, instabillá válik, majd két közepes tömegszámú magra szakad szét. A folyamat során magonként kb. $200 \\, \\text{MeV}$ energia és $2-3$ gyors neutron szabadul fel.
+      </div>
+      <div class="block app">
+        <div class="step-label">Szabályozott láncreakció: Az atomreaktor</div>
+        Ha a keletkező neutronok közül pontosan egy vált ki újabb hasadást, a multiplikációs tényező $k = 1$, a láncreakció szabályozott.<br><br>
+        <b>Az atomreaktor fő egységei:</b><br>
+        1. <i>Üzemanyag:</i> Dúsított uránrudak ($\\text{}^{235}_{\\phantom{}92}\\text{U}$).<br>
+        2. <i>Moderátor:</i> Víz vagy grafit. Feladata a hasadásból kilépő gyors neutronok lelassítása, mivel a lassú neutronok sokkal nagyobb valószínűséggel váltanak ki újabb hasadást.<br>
+        3. <i>Szabályozórudak:</i> Kadmium vagy bór tartalmú rudak, melyek kiváló neutronnyelők. Be- és kitolásukkal szabályozzák a reaktor teljesítményét.<br>
+        4. <i>Hűtőközeg:</i> Elszállítja a hőt a gőzfejlesztőhöz, ami meghajtja a villamos energiát termelő turbinákat.
+      </div>
+      <div class="block app">
+        <div class="step-label">Szabályozatlan folyamatok és nukleáris fegyverek</div>
+        • <b>Atombomba (Fissziós fegyver):</b> Ha tiszta $\\text{}^{235}_{\\phantom{}92}\\text{U}$ vagy plutónium $\\text{}^{239}_{\\phantom{}94}\\text{Pu}$ üzemanyagból hirtelen összehozzák a <b>kritikus tömeget</b>, a multiplikációs tényező $k > 1$ lesz. A láncreakció a másodperc milliomod része alatt lavinaszerűen lefut, pusztító robbanást okozva.<br>
+        • <b>Hidrogénbomba (Fúziós fegyver):</b> Könnyű magok, mint a deutérium ($\\text{}^{2}_{\\phantom{}1}\\text{H}$) és a trícium ($\\text{}^{3}_{\\phantom{}1}\\text{H}$) héliummaggá történő egyesülésén alapul: $\\text{}^{2}_{\\phantom{}1}\\text{H} + \\text{}^{3}_{\\phantom{}1}\\text{H} \\rightarrow \\text{}^{4}_{\\phantom{}2}\\text{He} + \\text{n}$. A pozitív magok közötti Coulomb-taszítás legyőzéséhez rendkívül nagy nyomás és több tízmillió Kelvines hőmérséklet kell, ezért a hidrogénbomba gyújtószerkezete egy hagyományos atombomba.
+      </div>`
+  }
+];
+
+const tocContainer = document.getElementById('toc');
+const contentContainer = document.getElementById('content-container');
+
+// A tartalom generálása és a tartalomjegyzék felépítése egyszerre
+sections.forEach(s => {
+  // Tartalomjegyzék elem
+  const li = document.createElement('li');
+  li.className = 'toc-item';
+  li.innerHTML = `<a href="#section-${s.id}"><span class="dot"></span>${s.title}</a>`;
+  tocContainer.appendChild(li);
+
+  // Teljes elméleti blokk
+  const sectionElement = document.createElement('section');
+  sectionElement.className = 'section-card';
+  sectionElement.id = 'section-' + s.id;
+  sectionElement.innerHTML = `
+    <h2 class="section-title">${s.title}</h2>
+    <div>${s.content}</div>
+  `;
+  contentContainer.appendChild(sectionElement);
+});
+
+// MathJax renderelés indítása az aszinkron betöltés után
+window.addEventListener('load', () => {
+  if (typeof MathJax !== 'undefined') {
+    MathJax.typesetPromise([contentContainer]);
+  }
+});
+</script>
+</body>
+</html>

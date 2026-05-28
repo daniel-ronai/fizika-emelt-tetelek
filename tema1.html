@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fizika Emelt</title>
+
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      processEscapes: true
+    }
+  };
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --text: #0f172a;
+    --muted: #475569;
+    --border: #e2e8f0;
+    
+    /* Letisztult, fókuszált fizika színpaletta */
+    --def-border: #6366f1; --def-bg: #f5f3ff; --def-text: #4338ca;
+    --thm-border: #0ea5e9; --thm-bg: #f0f9ff; --thm-text: #0369a1;
+    --biz-border: #f97316; --biz-bg: #fff7ed; --biz-text: #c2410c;
+    --app-border: #10b981; --app-bg: #ecfdf5; --app-text: #047857;
+    
+    --radius: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding: 40px 16px 80px;
+  }
+
+  .wrapper {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  /* Navigáció */
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    margin-bottom: 24px;
+    transition: all 0.2s;
+  }
+  .back-btn:hover { color: var(--text); background: #f1f5f9; }
+
+  /* Tétel Fejléc */
+  header {
+    background: var(--surface);
+    padding: 32px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    margin-bottom: 32px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    background: #f1f5f9;
+    color: var(--muted);
+    padding: 6px 14px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+  }
+
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+  }
+
+  .subtitle {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* Gyorsmenü / Tartalomjegyzék */
+  .toc-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 32px;
+  }
+  .toc-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+    letter-spacing: 0.05em;
+  }
+  .toc-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    list-style: none;
+  }
+  .toc-item a {
+    font-size: 14px;
+    color: var(--muted);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.15s;
+  }
+  .toc-item a:hover { color: var(--text); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); display: inline-block; }
+  .toc-item a:hover .dot { background: var(--thm-border); }
+
+  /* Tanulási szakaszok */
+  .section-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin-bottom: 32px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.01);
+    scroll-margin-top: 20px;
+  }
+
+  .section-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* Speciális Fizika Blokkok */
+  .block {
+    border-left: 4px solid var(--border);
+    padding: 16px 20px;
+    margin: 20px 0;
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  
+  .block.def { border-left-color: var(--def-border); background: var(--def-bg); }
+  .block.thm { border-left-color: var(--thm-border); background: var(--thm-bg); }
+  .block.biz { border-left-color: var(--biz-border); background: var(--biz-bg); }
+  .block.app { border-left-color: var(--app-border); background: var(--app-bg); }
+
+  .step-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+  .block.def .step-label { color: var(--def-text); }
+  .block.thm .step-label { color: var(--thm-text); }
+  .block.biz .step-label { color: var(--biz-text); }
+  .block.app .step-label { color: var(--app-text); }
+
+  /* Szövegformázás */
+  b { font-weight: 600; color: #000; }
+  ul, ol { margin-left: 20px; margin-top: 8px; }
+  li { margin-bottom: 6px; }
+
+  footer {
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 60px;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+  <a href="index.html" class="back-btn">← Főoldal</a>
+  
+  <header>
+    <div class="badge">Fizika • 1. Témakör</div>
+    <h1 id="main-title">Mozgás és egyensúly</h1>
+    <p class="subtitle" id="main-subtitle">Az egyenes vonalú és periodikus mozgások kinematikai és dinamikai leírása, Newton törvényei, valamint a merev testek egyensúlya és forgásdinamikája</p>
+  </header>
+
+  <div class="toc-box">
+    <div class="toc-title">Navigáció a tétel részei között</div>
+    <ul class="toc-list" id="toc"></ul>
+  </div>
+
+  <main id="content-container"></main>
+
+  <footer></footer>
+</div>
+
+<script>
+// A tétel minden kártyanyitogatás nélkül, logikus folyószövegként, de szigorúan tipografizálva
+const sections = [
+  {
+    id: 0,
+    title: "Egyenes vonalú mozgások kinematikája és szuperpozíciója",
+    content: `
+      <div class="block def">
+        <div class="step-label">Alapvető kinematikai mennyiségek és az egyenletes mozgás</div>
+        • <b>Kinematikai alapfogalmak:</b><br>
+        - <i>Helyvektor (<b>r</b>):</i> A vonatkoztatási rendszer origójából a tömegpontba mutató vektor.<br>
+        - <i>Elmozdulásvektor (<b>&Delta;r</b>):</i> A végpont és a kezdőpont helyvektorának különbsége: <b>&Delta;r</b> = <b>r</b><sub>2</sub> - <b>r</b><sub>1</sub>.<br>
+        - <i>Út (<b>s</b>):</i> A pálya azon darabjának hossza, amelyet a test az adott időtartam alatt befut. Skaláris mennyiség, ahol az út mindig nagyobb vagy egyenlő az elmozdulásvektor nagyságánál.<br><br>
+        • <b>Egyenes vonalú egyenletes mozgás:</b> Olyan egyenes pályán mozgó test, amely egyenlő időtartamok alatt egyenlő utakat tesz meg. <br>
+        - <i>Sebesség (<b>v</b>):</i> Az elmozdulás (vagy út) és az eltelt időtartam hányadosa, iránya a pálya érintője:
+        $$v = \\frac{s}{t} \\quad \\left[ \\text{Egysége: } \\frac{\\text{m}}{\\text{s}} \\right]$$
+        - <i>Grafikus leírás:</i> A sebesség-idő (v-t) grafikon a t-tengellyel párhuzamos egyenes, a grafikon alatti terület megadja a megtett utat (s = v * t). A hely-idő (x-t) grafikon egyenes, amelynek meredeksége megegyezik a sebességgel.
+      </div>
+      <div class="block thm">
+        <div class="step-label">Egyenletesen változó mozgások analitikus és grafikus leírása</div>
+        • <b>Gyorsulás (<b>a</b>):</b> Egységnyi idő alatt bekövetkező sebességváltozás. Egyenletesen változó mozgás esetén a gyorsulás állandó vektormennyiség:
+        $$a = \\frac{\\Delta v}{\\Delta t} = \\frac{v_t - v_0}{t} \\quad \\left[ \\text{Egysége: } \\frac{\\text{m}}{\\text{s}^2} \\right]$$
+        • <b>Út- és sebességtörvények (Analitikus leírás):</b><br>
+        - <i>Pillanatnyi sebesség:</i> v(t) = v<sub>0</sub> + a * t<br>
+        - <i>Megtett út:</i> s(t) = v<sub>0</sub> * t + 0.5 * a * t<sup>2</sup><br>
+        - <i>Időfüggetlen sebességképlet:</i>
+        $$v_t^2 - v_0^2 = 2 \\cdot a \\cdot s$$
+        • <b>Grafikus ábrázolás:</b><br>
+        - A gyorsulás-idő (a-t) grafikon vízszintes egyenes.<br>
+        - A sebesség-idő (v-t) grafikon lineárisan emelkedő vagy süllyedő egyenes. A grafikon alatti terület (trapéz vagy háromszög) geometriai levezetéséből adódik a megtett út.<br>
+        - A hely-idő (x-t) grafikon képe egy <i>parabolaív</i>.
+      </div>
+      <div class="block biz">
+        <div class="step-label">Mozgások szuperpozíciója és a hajítások</div>
+        • <b>Szuperpozíció elve:</b> Ha egy test egyidejűleg több mozgásban vesz részt, akkor a mozgások egymástól függetlenül mennek végbe, és a test pillanatnyi helyvektora, valamint sebessége a részmozgásokból származó vektorok összege. Példa erre a folyóban úszó csónak mozgása.<br><br>
+        • <b>Hajítások homogén nehézségi erőtérben:</b><br>
+        - <i>Vízszintes hajítás:</i> Egy vízszintes irányú, állandó kezdősebességű mozgás és egy függőleges szabadesés szuperpozíciója. A pálya egyenlete egy lefelé nyíló parabola.<br>
+        - <i>Ferde hajítás:</i> A vízszintessel valamilyen szöget bezáró kezdősebességű mozgás. Vízszintes tengelyen a mozgás egyenes vonalú egyenletes, míg függőleges tengelyen egyenletesen változó mozgás (felfelé lassuló, majd lefelé gyorsuló). A maximális hajítási távolság 45 fokos indulási szögnél érhető el a légellenállás elhanyagolásával.
+      </div>`
+  },
+  {
+    id: 1,
+    title: "Periodikus, kör- és rezgőmozgások kinematikája és dinamikája",
+    content: `
+      <div class="block def">
+        <div class="step-label">Körmozgás jellemzése: egyenletes és gyorsuló körmozgás</div>
+        • <b>Egyenletes körmozgás:</b> Olyan mozgás, amelynek pályája kör, és a sebesség nagysága állandó, de az iránya folytonosan változik.<br>
+        - <i>Periódusidő (<b>T</b>):</i> Egy teljes kör megtételéhez szükséges idő másodpercben.<br>
+        - <i>Frekvencia (<b>f</b>):</i> Az egységnyi idő alatt megtett körök száma (Hz).<br>
+        - <i>Szögsebesség (<b>&omega;</b>):</i> Az elfordult szög és az eltelt idő hányadosa:
+        $$\\omega = \\frac{2\\pi}{T} = 2\\pi \\cdot f \\quad \\left[ \\text{rad/s} \\right]$$
+        - <i>Kerületi sebesség (<b>v</b>):</i> v = &omega; * r<br>
+        - <i>Centripetális gyorsulás (<b>a<sub>cp</sub></b>):</i> A sebesség irányának változásából adódó, a körközéppont felé mutató gyorsulás:
+        $$a_{\\text{cp}} = \\frac{v^2}{r} = \\omega^2 \\cdot r$$
+        • <b>Gyorsuló körmozgás:</b> Ha a kerületi sebesség nagysága is változik az időben. Ekkor a szögsebesség változásának ütemét a <i>szöggyorsulás</i> fejezi ki, a pályát érintő sebességváltozást pedig a <i>kerületi gyorsulás</i> írja le.
+      </div>
+      <div class="block thm">
+        <div class="step-label">Harmonikus rezgőmozgás kinematikája és kapcsolata a körmozgással</div>
+        • <b>A két mozgás kapcsolata:</b> Egy egyenletes körmozgást végző test vetülete a körpálya bármelyik egyenes átmérőjére **szigorúan harmonikus rezgőmozgást** végez. Emiatt a rezgőmozgás kinematikai egyenletei közvetlenül levezethetők a körmozgásból.<br><br>
+        • <b>Időtörvények (Analitikus leírás):</b> Ha a rezgés az egyensúlyi helyzetből indul:<br>
+        - <i>Kitérés:</i> x(t) = A * sin(&omega; * t) (Ahol A az amplitúdó, a maximális kitérés).<br>
+        - <i>Sebesség:</i> v(t) = A * &omega; * cos(&omega; * t) (Maximális az egyensúlyi ponton áthaladva).<br>
+        - <i>Gyorsulás:</i> a(t) = -A * &omega;<sup>2</sup> * sin(&omega; * t). Ez felírható a következő alakban is:
+        $$a(t) = -\\omega^2 \\cdot x$$
+        A gyorsulás tehát minden pillanatban egyenesen arányos a kitéréssel, de azzal ellentétes irányú (mindig az egyensúlyi középpont felé mutat).
+      </div>
+      <div class="block biz">
+        <div class="step-label">Periodikus mozgások dinamikája, energiája és a rezonancia</div>
+        • <b>Egyenletes körmozgás dinamikája:</b> A Newton II. törvénye alapján a centripetális gyorsulást egy eredő erőnek kell létrehoznia. Ez a <b>centripetális erő</b>, amely nem egy külön erófajta, hanem a körközéppont felé mutató erők összege (pl. tapadási súrlódás a kanyarodó autónál):
+        $$F_{\\text{cp}} = m \\cdot a_{\\text{cp}} = m \\cdot \\frac{v^2}{r}$$
+        • <b>Harmonikus rezgőmozgás dinamikája:</b> Mivel a gyorsulás arányos a kitéréssel, a dinamika alaptörvénye szerint a rezgést fenntartó erő is egyenesen arányos a kitéréssel, de ellentétes irányú. Ez a lineáris visszaállító erő (pl. rugóerő): F = -D * x (ahol D a direkciós erő vagy rugóállandó). Ebből a rezgés periódusideje:
+        $$T = 2\\pi \\cdot \\sqrt{\\frac{m}{D}}$$
+        • <b>A rezgő test energiája:</b> Súrlódásmentes rendszerben a mozgási energia és a rugalmas helyzeti energia összege állandó, értéke a maximális kitérésnél mérhető energiával egyenlő: E = 0.5 * D * A<sup>2</sup>.<br><br>
+        • <b>Kényszerrezgés és rezonancia:</b> Ha a rendszerre egy külső, periodikus kényszererő hat, a rendszer ennek frekvenciáját veszi át. Ha a külső gerjesztés frekvenciája megegyezik a rendszer saját szabadrezgési frekvenciájával, az amplitúdó hatalmasra növekszik. Ez a <b>rezonancia jelensége</b>, ami szerkezeti katasztrófákhoz (pl. hidak leszakadása) vezethet, ha nem csillapítják megfelelően.
+      </div>`
+  },
+  {
+    id: 2,
+    title: "Dinamika alapjai, Newton-törvények és erőtörvények",
+    content: `
+      <div class="block def">
+        <div class="step-label">A tömeg, az erő és Newton törvényei</div>
+        • <b>Tömeg (m):</b> A testek tehetetlenségének és gravitációs tulajdonságának mértéke. Skaláris mennyiség.<br>
+        • <b>Erő (F):</b> A testek egymásra hatásának (dinamikai kölcsönhatásának) mértéke, vektormennyiség.<br><br>
+        • <b>Newton I. törvénye (Tehetetlenség törvénye):</b> Minden test megőrzi nyugalmi állapotát vagy egyenes vonalú egyenletes mozgását mindaddig, amíg egy másik test vagy mező erőhatása meg nem változtatja ezt az állapotát. Azok a vonatkoztatási rendszerek, amelyekben ez teljesül, az inerciás rendszerek.<br>
+        • <b>Newton II. törvénye (A dinamika alaptörvénye):</b> Inerciás rendszerben a testre ható erők eredője egyenesen arányos a test gyorsulásával, a test tömege az arányossági tényező:
+        $$\\mathbf{F}_{\\text{eredő}} = m \\cdot \\mathbf{a}$$
+        • <b>Newton III. törvénye (Hatás-ellenhatás törvénye):</b> Két test kölcsönhatásakor az első test által a másodikra kifejtett erő egyenlő nagyságú, azonos hatásvonalú, de ellentétes irányú a második test által az elsőre kifejtett erővel. Az erők mindig párosával lépnek fel, de különböző testekre hatnak, így nem oltják ki egymást.<br>
+        • <b>Newton IV. törvénye (Erők szuperpozíciója):</b> Ha egy testre egyidejűleg több erő hat, azok együttes hatása megegyezik a vektoriális összegükként előálló egyetlen erő (az eredő erő) hatásával.
+      </div>
+      <div class="block thm">
+        <div class="step-label">A klasszikus mechanika legfontosabb erőtörvényei</div>
+        A természetben fellépő legfontosabb mechanikai erők összefüggései:<br><br>
+        1. <b>Gravitációs erő (Newton-féle vonzóerő):</b> Két pontszerű test között ható vonzóerő, amely egyenesen arányos a tömegek szorzatával és fordítottan arányos a távolságuk négyzetével:
+        $$F_{\\text{grav}} = f \\cdot \\frac{m_1 \\cdot m_2}{r^2}$$
+        A Föld felszínén a nehézségi erő jó közelítéssel: F = m * g.<br>
+        2. <b>Rugóerő (Hooke-törvény):</b> Rugalmas alakváltozás során fellépő, a megnyúlással egyenesen arányos, de ellentétes irányú visszaállító erő: F = -D * x.<br>
+        3. <b>Súrlódási erők:</b><br>
+        - <i>Tapadási súrlódási erő:</i> Nyugvó felületek között lép fel. Maximális értéke a felületeket összenyomó erővel arányos: F = &mu;<sub>t</sub> * F<sub>ny</sub>.<br>
+        - <i>Csúszási súrlódási erő:</i> Egymáson elmozduló felületek között hat, iránya a relatív sebességgel ellentétes: F = &mu;<sub>s</sub> * F<sub>ny</sub>.
+      </div>`
+  },
+  {
+    id: 3,
+    title: "Merev testek statikája, egyensúlya és egyszerű gépek",
+    content: `
+      <div class="block def">
+        <div class="step-label">A merev test modellje, a forgatónyomaték és az egyensúly feltételei</div>
+        • <b>Merev test:</b> Olyan kiterjedt pontrendszer, amelyben a pontok egymástól mért távolsága semmilyen külső erő hatására nem változik meg (az alakváltozás elhanyagolható).<br>
+        • <b>Forgatónyomaték (M):</b> Az erő testet forgató hatásának mértéke egy adott forgástengelyre vonatkoztatva. Nagysága az erő és az erőhatásvonal forgástengelytől mért merőleges távolságának (az erőkarnak) a szorzata:
+        $$M = F \\cdot k$$
+        • <b>A kiterjedt merev test egyensúlyának két feltétele:</b><br>
+        1. <i>Haladó egyensúly:</i> A testre ható külső erők vektoriális összege zéró legyen (a tömegközéppont nem gyorsul).<br>
+        2. <i>Forgó egyensúly:</i> A testre ható külső erők tetszőleges pontra felírt forgatónyomatékainak összege zéró legyen (nincs szöggyorsulás).
+      </div>
+      <div class="block app">
+        <div class="step-label">Egyszerű gépek és gyakorlati alkalmazásuk</div>
+        
+        Az egyszerű gépek olyan mechanikai eszközök, amelyekkel megváltoztatható a kifejtendő erő iránya vagy nagysága, de munkát megtakarítani velük nem lehet (amit nyerünk az erőben, elveszítjük az úton).<br><br>
+        • <b>1. Emelők:</b> Egy rögzített tengely körül forgatható merev rúd. Forgásegyensúly alapján a tehererő és erőkarjának szorzata egyenlő az emelőerő és erőkarjának szorzarával.<br>
+        - <i>Egykarú emelő:</i> A teher és az emelőerő a tengely azonos oldalán van (pl. talicska).<br>
+        - <i>Kétkarú emelő:</i> A teher és az erő a tengely ellentétes oldalán helyezkedik el (pl. feszítővas).<br><br>
+        • <b>2. Csigák:</b><br>
+        - <i>Állócsiga:</i> A tengelye rögzített. Csak az erő irányát változtatja meg, nagyságát nem (F = G).<br>
+        - <i>Mozgócsiga:</i> A tengelye a teherrel együtt mozog. Mivel a kötelet két ág tartja, a kifejtendő erő fele a teher súlyának (F = G / 2), cserébe kétszer akkora kötelet kell meghúzni.<br><br>
+        • <b>3. Lejtő:</b> Függőleges emelés helyett a testet egy síkon csúsztatjuk fel. A szükséges minimális húzóerő a súly lejtőirányú komponense, ami lényegesen kisebb, mint a test súlya, ha a lejtő hajlásszöge kicsi.
+      </div>`
+  },
+  {
+    id: 4,
+    title: "Forgómozgás dinamikája, tehetetlenségi nyomaték és perdület",
+    content: `
+      <div class="block def">
+        <div class="step-label">A tehetetlenségi nyomaték és a forgásdinamika alaptörvénye</div>
+        • <b>Tehetetlenségi nyomaték (I):</b> A merev test forgási tehetetlenségének mértéke egy adott forgástengelyre vonatkozóan. Függ a test tömegétől és a tömeg tengelytől való távolsági eloszlásától:
+        $$I = \\sum m_i \\cdot r_i^2 \\quad \\left[ \\text{kg} \\cdot \\text{m}^2 \\right]$$
+        • <b>A forgómozgás dinamikai alaptörvénye:</b> A Newton II. törvényének forgási megfelelője. A merev testre ható külső forgatónyomatékok eredője egyenesen arányos a test szöggyorsulásával (&beta;), az arányossági tényező pedig a tehetetlenségi nyomaték:
+        $$M_{\\text{eredő}} = I \\cdot \\beta$$
+      </div>
+      <div class="block thm">
+        <div class="step-label">Perdület és a perdületmegmaradás törvénye</div>
+        • <b>Perdület (Impulzusmomentum, L):</b> A forgómozgásban lévő test forgási tehetetlenségének és forgási szögsebességének szorzata:
+        $$L = I \\cdot \\omega \\quad \\left[ \\text{J} \\cdot \\text{s} \\right]$$
+        • <b>A perdületmegmaradás törvénye:</b> Ha a merev testre vagy rendszerre ható külső forgatónyomatékok eredője zéró, akkor a rendszer összes perdülete az időben állandó marad:
+        $$I_1 \\cdot \\omega_1 = I_2 \\cdot \\omega_2 = \\text{állandó}$$
+        • <b>Gyakorlati alkalmazás (A piruettező műkorcsolyázó):</b> Amikor a forgó műkorcsolyázó behúzza a karjait a törzséhez, a testének tömege közelebb kerül a forgástengelyhez. Emiatt a tehetetlenségi nyomatéka drasztikusan lecsökken. Mivel külső forgatónyomaték nem hat rá, a perdületének meg kell maradnia. A csökkenő tehetetlenségi nyomatékot a szögsebesség automatikus, látványos növekedése kompenzálja, vagyis a korcsolyázó rendkívüli módon felgyorsul.
+      </div>`
+  }
+];
+
+const tocContainer = document.getElementById('toc');
+const contentContainer = document.getElementById('content-container');
+
+// A tartalom generálása és a tartalomjegyzék felépítése egyszerre
+sections.forEach(s => {
+  // Tartalomjegyzék elem
+  const li = document.createElement('li');
+  li.className = 'toc-item';
+  li.innerHTML = `<a href="#section-${s.id}"><span class="dot"></span>${s.title}</a>`;
+  tocContainer.appendChild(li);
+
+  // Teljes elméleti blokk
+  const sectionElement = document.createElement('section');
+  sectionElement.className = 'section-card';
+  sectionElement.id = 'section-' + s.id;
+  sectionElement.innerHTML = `
+    <h2 class="section-title">${s.title}</h2>
+    <div>${s.content}</div>
+  `;
+  contentContainer.appendChild(sectionElement);
+});
+
+// MathJax renderelés indítása az aszinkron betöltés után
+window.addEventListener('load', () => {
+  if (typeof MathJax !== 'undefined') {
+    MathJax.typesetPromise([contentContainer]);
+  }
+});
+</script>
+</body>
+</html>
